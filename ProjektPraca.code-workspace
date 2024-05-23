@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"i18n-ally.localesPaths": [
+			"locales"
+		],
+		"i18n-ally.useKeyStyle": "nested",
+		"i18n-ally.enabledParsers": [
+			"js"
+		],
+		"i18n-ally.sourceLanguage": "pl",
+		"i18n-ally.keystyle": "nested"
+	}
+}

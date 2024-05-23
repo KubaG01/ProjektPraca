@@ -1,0 +1,50 @@
+{
+  "aplications": [
+    {
+      "id": 10000,
+      "name": "Aplication1",
+      "last": "15.05.2024",
+      "dataCreate": "10.05.2024",
+      "serverName": "Server1"
+    },
+    {
+      "id": 10001,
+      "name": "Aplication2",
+      "last": "20.05.2024",
+      "dataCreate": "09.05.2024",
+      "serverName": "WWW2"
+    }
+  ],
+
+  "servers": [
+    {
+      "id": 1000,
+      "name": "Server1",
+      "last": "16.05.2024",
+      "dataCreate": "12.05.2024"
+    },
+    {
+      "id": 1001,
+      "name": "WWW2",
+      "last": "14.05.2024",
+      "dataCreate": "11.05.2024"
+    },
+    {
+      "id": 1002,
+      "name": "AAA2",
+      "last": "15.05.2024",
+      "dataCreate": "10.05.2024"
+    }
+  ],
+
+  "tasks": [
+    {
+      "id": 100000,
+      "name": "Task1",
+      "last": "14.05.2024",
+      "dataCreate": "13.05.2024",
+      "serverName": "Server1",
+      "AppName": "Aplication2"
+    }
+  ]
+}

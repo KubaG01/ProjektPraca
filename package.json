@@ -1,0 +1,29 @@
+{
+  "name": "ProjektPraca",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "vue-cli-service build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "serve": "vue-cli-service serve",
+    "lint": "vue-cli-service lint",
+    "json-server": "json-server --watch db.json --port 3001"
+  },
+  "dependencies": {
+    "@nuxtjs/i18n": "^7.3.1",
+    "core-js": "^3.25.3",
+    "fs": "^0.0.1-security",
+    "nuxt": "^2.15.8",
+    "nuxt-i18n": "^6.28.1",
+    "vue": "^2.7.10",
+    "vue-server-renderer": "^2.7.10",
+    "vue-template-compiler": "^2.7.10",
+    "vuetify": "^2.6.10"
+  },
+  "devDependencies": {
+    "@nuxtjs/vuetify": "^1.12.3",
+    "json-server": "^1.0.0-beta.0"
+  }
+}
