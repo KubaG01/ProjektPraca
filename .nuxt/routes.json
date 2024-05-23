@@ -1,0 +1,58 @@
+[
+  {
+    "name": "index___en",
+    "path": "/en",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "_name": "_4f6071a3"
+  },
+  {
+    "name": "index___pl",
+    "path": "/pl",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "_name": "_4f6071a3"
+  },
+  {
+    "name": "aplications___en",
+    "path": "/en/aplications",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\aplications.vue",
+    "chunkName": "pages/aplications",
+    "_name": "_5dc50366"
+  },
+  {
+    "name": "servers___en",
+    "path": "/en/servers",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\servers.vue",
+    "chunkName": "pages/servers",
+    "_name": "_8880edbe"
+  },
+  {
+    "name": "tasks___en",
+    "path": "/en/tasks",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\tasks.vue",
+    "chunkName": "pages/tasks",
+    "_name": "_e953f342"
+  },
+  {
+    "name": "aplications___pl",
+    "path": "/pl/aplications",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\aplications.vue",
+    "chunkName": "pages/aplications",
+    "_name": "_5dc50366"
+  },
+  {
+    "name": "servers___pl",
+    "path": "/pl/servers",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\servers.vue",
+    "chunkName": "pages/servers",
+    "_name": "_8880edbe"
+  },
+  {
+    "name": "tasks___pl",
+    "path": "/pl/tasks",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\tasks.vue",
+    "chunkName": "pages/tasks",
+    "_name": "_e953f342"
+  }
+]
