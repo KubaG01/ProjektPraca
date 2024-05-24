@@ -30,6 +30,11 @@
       </v-btn>
 
       <v-spacer />
+      <!--
+      <v-btn @click="changeLanguage('en')" color="primary">EN</v-btn>
+      <v-btn @click="changeLanguage('pl')" color="primary">PL</v-btn>
+       <LangSwitcher /> 
+      -->
     </v-app-bar>
     <v-main>
       <v-container>
@@ -44,6 +49,8 @@
 </template>
 
 <script>
+import LangSwitcher from "~/components/LangSwitcher";
+
 export default {
   name: "DefaultLayout",
   data() {
@@ -82,6 +89,12 @@ export default {
           : "";
       return `${prefix}${path}`;
     },
+    changeLanguage(lang) {
+      this.$i18n.locale = this.$i18n.lang;
+    },
+  },
+  components: {
+    LangSwitcher,
   },
 };
 </script>

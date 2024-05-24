@@ -2,155 +2,82 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="10">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="headline ma-4">
           {{ $t("servers") }}
         </v-card-title>
         <v-card-text>
-          <v-loyout row>
+          <v-layout row>
             <v-flex>
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
                   <v-layout row wrap class="pa-3">
-                    <v-flex md1>
-                      <v-btn
-                        small
-                        text
-                        color="grey"
-                        @click="sortBy('id')"
-                        style="width: 100%"
-                      >
-                        <div class="caption grey--text text-capitalize">
-                          ID
-                          <span v-if="currentSort === 'id'">
-                            {{ sortDirections.id === 1 ? "↑" : "↓" }}
-                          </span>
-                        </div>
-                      </v-btn>
+                    <v-flex md4>
+                      <v-text-field
+                        v-model="search"
+                        :label="$t('search')"
+                        prepend-inner-icon="mdi-magnify"
+                        variant="outlined"
+                      ></v-text-field>
                     </v-flex>
-                    <v-flex md2>
-                      <v-btn
-                        small
-                        text
-                        color="grey"
-                        @click="sortBy('name')"
-                        style="width: 100%"
-                      >
-                        <div class="caption grey--text text-capitalize">
-                          Name
-                          <span v-if="currentSort === 'name'">
-                            {{ sortDirections.name === 1 ? "↑" : "↓" }}
-                          </span>
-                        </div>
-                      </v-btn>
-                    </v-flex>
-                    <v-flex md2>
-                      <v-btn
-                        small
-                        text
-                        color="grey"
-                        @click="sortBy('last')"
-                        style="width: 100%"
-                      >
-                        <div class="caption grey--text text-capitalize">
-                          Last Modified
-                          <span v-if="currentSort === 'last'">
-                            {{ sortDirections.last === 1 ? "↑" : "↓" }}
-                          </span>
-                        </div>
-                      </v-btn>
-                    </v-flex>
-                    <v-flex md2>
-                      <v-btn
-                        small
-                        text
-                        color="grey"
-                        @click="sortBy('dataCreate')"
-                        style="width: 100%"
-                      >
-                        <div class="caption grey--text text-capitalize">
-                          Creation Date
-                          <span v-if="currentSort === 'dataCreate'">
-                            {{ sortDirections.dataCreate === 1 ? "↑" : "↓" }}
-                          </span>
-                        </div>
-                      </v-btn>
-                    </v-flex>
-                    
                   </v-layout>
-                  <v-divider
-                    :thickness="3"
-                    color="grey"
-                    class="my-3"
-                  ></v-divider>
-                  <div v-for="server in servers" :key="server.id">
-                    <v-layout row wrap class="pa-3 align-center">
-                      <v-flex xs6 sm1 md1>
-                        <div class="text-center">{{ server.id }}</div>
-                      </v-flex>
-                      <v-flex md2>
-                        <div class="text-center">{{ server.name }}</div>
-                      </v-flex>
-                      <v-flex md2>
-                        <div class="text-center">{{ server.last }}r.</div>
-                      </v-flex>
-                      <v-flex md2>
-                        <div class="text-center">{{ server.dataCreate }}r.</div>
-                      </v-flex>
-                      
-                      <v-spacer></v-spacer>
-                      <v-flex
-                        xs6
-                        sm2
-                        md2
-                        class="text-right"
-                        :style="{ maxWidth: '100px' }"
-                      >
-                        <v-btn class="primary" :style="{ minWidth: '90px' }"
-                          >Edytuj</v-btn
+                  <v-divider :thickness="3" color="grey"></v-divider>
+                  <v-data-table
+                    :headers="headers"
+                    :items="filtered"
+                    hide-default-footer
+                  >
+                    <v-dialog v-model="dialogDelete" max-width="500px">
+                      <v-card>
+                        <v-card-title class="text-h5"
+                          >Are you sure you want to delete this
+                          item?</v-card-title
                         >
-                      </v-flex>
-                      <v-flex
-                        xs6
-                        sm2
-                        md2
-                        class="text-right mx-2"
-                        :style="{ maxWidth: '100px' }"
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="blue-darken-1"
+                            variant="text"
+                            @click="closeDelete"
+                            >Cancel</v-btn
+                          >
+                          <v-btn
+                            color="blue-darken-1"
+                            variant="text"
+                            @click="deleteItemConfirm"
+                            >OK</v-btn
+                          >
+                          <v-spacer></v-spacer>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+
+                    <template v-slot:item.actions="{ item }">
+                      <v-icon
+                        class="me-2"
+                        size="small"
+                        @click="editItem(item)"
+                        color="primary"
                       >
-                        <v-btn
-                          class="error"
-                          :style="{ minWidth: '90px' }"
-                          @click="Delete = true"
-                          >Usuń</v-btn
-                        >
-                      </v-flex>
-                    </v-layout>
-                    <v-divider
-                      :thickness="3"
-                      color="grey"
-                      class="my-3"
-                    ></v-divider>
-                  </div>
+                        mdi-pencil
+                      </v-icon>
+                      <v-icon
+                        size="small"
+                        @click="deleteItem(item)"
+                        color="error"
+                      >
+                        mdi-delete
+                      </v-icon>
+                    </template>
+                  </v-data-table>
+                  <v-divider :thickness="3" color="grey"></v-divider>
                 </v-card>
               </v-container>
             </v-flex>
-          </v-loyout>
+          </v-layout>
         </v-card-text>
         <v-card-actions md="6">
           <v-spacer />
-          <v-dialog v-model="DeleteApp" persistent max-width="500">
-            <v-card>
-              <v-card-title class="headline"
-                >Czy na pewno chcesz usunąć?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="green darken-1" text @click="Delete = false"
-                  >Anuluj</v-btn
-                >
-                <v-btn color="red darken-1" text @click="deleteApp">Usuń</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+
           <v-dialog
             v-model="Add"
             persistent
@@ -179,13 +106,14 @@
                     <v-col cols="12">
                       <v-text-field
                         v-model="newServer.name"
-                        label="Name*"
+                        :label="$t('name') + '*'"
                         :error="nameError"
                         @blur="checkName"
                         required
                       ></v-text-field>
                     </v-col>
 
+                    
                   </v-row>
                 </v-container>
                 <small>*{{ $t("required") }}</small>
@@ -218,39 +146,33 @@ import db from "~/data/db.json";
 export default {
   data() {
     return {
+      dialogDelete: false,
+      search: "",
       Add: false,
+      headers: [
+        { text: this.$t("ID"), value: "id" },
+        { text: this.$t("name"), value: "name" },
+        { text: this.$t("last"), value: "last" },
+        { text: this.$t("dataCreate"), value: "dataCreate" },
+        { text: this.$t("actions"), value: "actions", sortable: false },
+      ],
+      servers: db.servers,
       servers: db.servers,
       selectedApp: null,
-      currentSort: "id",
       newServer: {
         name: "",
-        serverName: "",
       },
       sortDirections: {
         id: 1,
         name: 1,
         last: 1,
         dataCreate: 1,
-        serverName: 1,
       },
       nameError: false,
+      serverError: false,
     };
   },
   methods: {
-    sortBy(prop) {
-      if (this.currentSort !== prop) {
-        this.currentSort = prop;
-        this.sortDirections[prop] = 1;
-      } else {
-        this.sortDirections[prop] *= -1;
-      }
-
-      this.aplications.sort((a, b) => {
-        if (a[prop] < b[prop]) return -1 * this.sortDirections[prop];
-        if (a[prop] > b[prop]) return 1 * this.sortDirections[prop];
-        return 0;
-      });
-    },
     checkName() {
       if (!this.newServer.name.trim()) {
         this.nameError = true;
@@ -260,27 +182,55 @@ export default {
     },
     resetApp() {
       this.nameError = false;
+      this.serverError = false;
       this.newServer.name = "";
     },
     save() {
-      const newId = Math.max(...this.aplications.map((app) => app.id)) + 1;
+      const newId = Math.max(...this.servers.map((app) => app.id)) + 1;
 
-      const newServer = {
+      const newApp = {
         id: newId,
         name: this.newServer.name,
         last: new Date().toLocaleDateString(),
         dataCreate: new Date().toLocaleDateString(),
       };
 
-      this.aplications.push(newServer);
+      this.servers.push(newApp);
 
       this.resetApp();
 
-      this.Add = false
-      
+      this.Add = false;
     },
-    confirmDelete() {
-      this.Delete = true;
+    editItem(item) {
+      this.editedIndex = this.servers.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+
+    deleteItem (item) {
+        this.editedIndex = this.servers.indexOf(item)
+        this.editedItem = Object.assign({}, item)
+        this.dialogDelete = true
+      },
+      
+    deleteItemConfirm() {
+    const index = this.servers.indexOf(this.selectedApp);
+    if (index > -1) {
+      this.servers.splice(index, 1);
+    }
+    this.dialogDelete = false;
+    this.selectedApp = null;
+  },
+  closeDelete() {
+    this.dialogDelete = false;
+    this.selectedApp = null;
+  },
+  },
+  computed: {
+    filtered() {
+      return this.servers.filter((app) => {
+        return app.name.toLowerCase().includes(this.search.toLowerCase());
+      });
     },
   },
 };

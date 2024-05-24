@@ -12,7 +12,35 @@
       "name": "Aplication2",
       "last": "20.05.2024",
       "dataCreate": "09.05.2024",
+      "serverName": "WWW1"
+    },
+    {
+      "id": 10002,
+      "name": "Aplication3",
+      "last": "15.05.2024",
+      "dataCreate": "10.05.2024",
+      "serverName": "Server2"
+    },
+    {
+      "id": 10003,
+      "name": "App1",
+      "last": "20.05.2024",
+      "dataCreate": "09.05.2024",
       "serverName": "WWW2"
+    },
+    {
+      "id": 10004,
+      "name": "Aplikacja2",
+      "last": "15.05.2024",
+      "dataCreate": "10.05.2024",
+      "serverName": "Server1"
+    },
+    {
+      "id": 10005,
+      "name": "App2",
+      "last": "20.05.2024",
+      "dataCreate": "09.05.2024",
+      "serverName": "AAA2"
     }
   ],
 
@@ -34,17 +62,83 @@
       "name": "AAA2",
       "last": "15.05.2024",
       "dataCreate": "10.05.2024"
+    },
+    {
+      "id": 1003,
+      "name": "Server2",
+      "last": "21.05.2024",
+      "dataCreate": "12.05.2024"
+    },
+    {
+      "id": 1004,
+      "name": "WWW1",
+      "last": "20.05.2024",
+      "dataCreate": "11.05.2024"
+    },
+    {
+      "id": 1005,
+      "name": "AAA",
+      "last": "15.05.2024",
+      "dataCreate": "15.05.2024"
     }
   ],
 
   "tasks": [
     {
       "id": 100000,
-      "name": "Task1",
+      "name": "Task0",
+      "last": "10.05.2024",
+      "dataCreate": "01.05.2024",
+      "serverName": "WWW2",
+      "appName": "Aplication2"
+    },
+    {
+      "id": 100001,
+      "name": "TTT",
+      "last": "11.05.2024",
+      "dataCreate": "02.05.2024",
+      "serverName": "Server2",
+      "appName": "App1"
+    },
+    {
+      "id": 100002,
+      "name": "Task2",
+      "last": "12.05.2024",
+      "dataCreate": "01.05.2024",
+      "serverName": "WWW1",
+      "appName": "Aplication3"
+    },
+    {
+      "id": 100003,
+      "name": "Task3",
+      "last": "13.05.2024",
+      "dataCreate": "03.05.2024",
+      "serverName": "AAA2",
+      "appName": "Aplication2"
+    },
+    {
+      "id": 100004,
+      "name": "TTT3",
       "last": "14.05.2024",
-      "dataCreate": "13.05.2024",
+      "dataCreate": "04.05.2024",
+      "serverName": "AAA",
+      "appName": "Aplication2"
+    },
+    {
+      "id": 100005,
+      "name": "Task5",
+      "last": "15.05.2024",
+      "dataCreate": "05.05.2024",
       "serverName": "Server1",
-      "AppName": "Aplication2"
+      "appName": "App1"
+    },
+    {
+      "id": 100006,
+      "name": "Zadanie2",
+      "last": "16.05.2024",
+      "dataCreate": "06.05.2024",
+      "serverName": "Server1",
+      "appName": "Aplication3"
     }
   ]
 }
