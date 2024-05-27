@@ -11,7 +11,7 @@
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
                   <v-layout row wrap class="pa-3">
-                    <v-flex md4>
+                    <v-flex md4 class="px-3">
                       <v-text-field
                         v-model="search"
                         :label="$t('search')"
@@ -19,38 +19,26 @@
                         variant="outlined"
                       ></v-text-field>
                     </v-flex>
+                    <v-flex md4 class="px-3">
+                      <v-select
+                        v-model="newApplication.selectedServer"
+                        :items="servers"
+                        item-text="name"
+                        item-value="name"
+                        :label="$t('servers')"
+                        @change="checkApp"
+                        @blur="checkApp"
+                        clearable
+                      ></v-select>
+                    </v-flex>
                   </v-layout>
                   <v-divider :thickness="3" color="grey"></v-divider>
                   <v-data-table
                     :headers="headers"
                     :items="filtered"
                     hide-default-footer
+                    :items-per-page="-1"
                   >
-                    <v-dialog v-model="dialogDelete" max-width="500px">
-                      <v-card>
-                        <v-card-title class="text-h5"
-                          >Are you sure you want to delete this
-                          item?</v-card-title
-                        >
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="blue-darken-1"
-                            variant="text"
-                            @click="closeDelete"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            color="blue-darken-1"
-                            variant="text"
-                            @click="deleteItemConfirm"
-                            >OK</v-btn
-                          >
-                          <v-spacer></v-spacer>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
                     <template v-slot:item.actions="{ item }">
                       <v-icon
                         class="me-2"
@@ -77,7 +65,26 @@
         </v-card-text>
         <v-card-actions md="6">
           <v-spacer />
-
+          <v-dialog v-model="dialogDelete" max-width="550px">
+            <v-card>
+              <v-card-title class="text-h5"
+                >{{ $t("deleteInfo") }}</v-card-title
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="deleteItemConfirm"
+                  >{{ $t("yes") }}</v-btn
+                >
+                <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                  >{{ $t("no") }}</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <v-dialog
             v-model="Add"
             persistent
@@ -107,10 +114,13 @@
                       <v-text-field
                         v-model="newApplication.name"
                         :label="$t('name') + '*'"
-                        :error="nameError"
+                        :error="nameError || duplicateNameError"
                         @blur="checkName"
                         required
                       ></v-text-field>
+                      <v-alert v-if="duplicateNameError" type="error">
+                        {{ $t("aplication") + $t(" ") +$t("exist") }}
+                      </v-alert>
                     </v-col>
 
                     <v-col cols="12" sm="6">
@@ -158,9 +168,13 @@ import db from "~/data/db.json";
 export default {
   data() {
     return {
+      duplicateNameError: false,
+      selectedServer: null,
       dialogDelete: false,
       search: "",
       Add: false,
+      Edit: false,
+      isEditing: false,
       headers: [
         { text: this.$t("ID"), value: "id" },
         { text: this.$t("name"), value: "name" },
@@ -171,8 +185,9 @@ export default {
       ],
       aplications: db.aplications,
       servers: db.servers,
-      selectedApp: null,
+      filteredApplications: [...db.aplications],
       newApplication: {
+        id: null,
         name: "",
         serverName: "",
       },
@@ -193,13 +208,33 @@ export default {
         this.nameError = true;
       } else {
         this.nameError = false;
+        if (this.checkDuplicateName()) {
+          this.duplicateNameError = true;
+        } else {
+          this.duplicateNameError = false;
+        }
       }
     },
     checkServer() {
       if (!this.newApplication.serverName) {
         this.serverError = true;
+        this.filteredApplications = [...this.aplications];
       } else {
         this.serverError = false;
+        this.filteredApplications = this.aplications.filter(
+          (app) => app.serverName === this.newApplication.serverName
+        );
+      }
+    },
+    checkApp() {
+      if (!this.newApplication.selectedServer) {
+        this.filteredApplications = this.aplications;
+        this.newApplication.selectedApp = null;
+      } else {
+        this.filteredApplications = this.aplications.filter(
+          (app) => app.serverName === this.newApplication.selectedServer
+        );
+        this.newApplication.selectedApp = null;
       }
     },
     resetApp() {
@@ -207,53 +242,95 @@ export default {
       this.serverError = false;
       this.newApplication.name = "";
       this.newApplication.serverName = "";
+      this.newApplication.selectedServer = "";
+      this.isEditing = false;
+    },
+    checkDuplicateName() {
+      const aplicationNameLower = this.newApplication.name.trim().toLowerCase();
+      return this.aplications.some(
+        (task) =>
+          task.name.trim().toLowerCase() === taskNameLower &&
+          (!this.isEditing || task.id !== this.newApplication.id)
+      );
     },
     save() {
-      const newId = Math.max(...this.aplications.map((app) => app.id)) + 1;
+      if (this.checkDuplicateName()) {
+        this.duplicateNameError = true;
+        return;
+      }
 
-      const newApp = {
-        id: newId,
-        name: this.newApplication.name,
-        last: new Date().toLocaleDateString(),
-        dataCreate: new Date().toLocaleDateString(),
-        serverName: this.newApplication.serverName,
-      };
+      this.duplicateNameError = false;
 
-      this.aplications.push(newApp);
+      if (this.isEditing) {
+        const index = this.aplications.findIndex(
+          (task) => task.id === this.newApplication.id
+        );
+        if (index > -1) {
+          this.aplications[index] = { ...this.newApplication };
+        }
+      } else {
+        const newId = Math.max(...this.aplications.map((app) => app.id)) + 1;
+
+        const newApp = {
+          id: newId,
+          name: this.newApplication.name,
+          last: new Date().toLocaleDateString(),
+          dataCreate: new Date().toLocaleDateString(),
+          serverName: this.newApplication.serverName,
+        };
+
+        this.aplications.push(newApp);
+      }
+
+      this.aplications = [...this.aplications];
+
+      this.filteredApplications = this.aplications.filter(
+        (app) => app.serverName === this.newApplication.serverName
+      );
 
       this.resetApp();
+      this.checkServer();
+      this.checkApp();
 
       this.Add = false;
     },
     editItem(item) {
-      this.editedIndex = this.aplications.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.newApplication = { ...item };
+      this.isEditing = true;
+      this.Add = true;
+      this.checkServer();
+    },
+    deleteItem(item) {
+      this.selectedApp = item;
+      this.dialogDelete = true;
     },
 
-    deleteItem (item) {
-        this.editedIndex = this.aplications.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
-      
     deleteItemConfirm() {
-    const index = this.aplications.indexOf(this.selectedApp);
-    if (index > -1) {
-      this.aplications.splice(index, 1);
-    }
-    this.dialogDelete = false;
-    this.selectedApp = null;
-  },
-  closeDelete() {
-    this.dialogDelete = false;
-    this.selectedApp = null;
-  },
+      const index = this.aplications.indexOf(this.selectedApp);
+      if (index > -1) {
+        this.aplications.splice(index, 1);
+      }
+      this.dialogDelete = false;
+      this.selectedApp = null;
+    },
+    closeDelete() {
+      this.dialogDelete = false;
+      this.selectedApp = null;
+    },
   },
   computed: {
     filtered() {
-      return this.aplications.filter((app) => {
-        return app.name.toLowerCase().includes(this.search.toLowerCase());
+      return this.aplications.filter((task) => {
+        const matchesSearch = task.name
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
+        const matchesServer =
+          !this.newApplication.selectedServer ||
+          task.serverName === this.newApplication.selectedServer;
+        const matchesApp =
+          !this.newApplication.selectedApp ||
+          task.appName === this.newApplication.selectedApp;
+        return matchesSearch && matchesServer && matchesApp;
       });
     },
   },

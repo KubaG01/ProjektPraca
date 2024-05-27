@@ -11,7 +11,7 @@
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
                   <v-layout row wrap class="pa-3">
-                    <v-flex md4>
+                    <v-flex md4 class="px-3">
                       <v-text-field
                         v-model="search"
                         :label="$t('search')"
@@ -25,32 +25,8 @@
                     :headers="headers"
                     :items="filtered"
                     hide-default-footer
+                    :items-per-page="-1"
                   >
-                    <v-dialog v-model="dialogDelete" max-width="500px">
-                      <v-card>
-                        <v-card-title class="text-h5"
-                          >Are you sure you want to delete this
-                          item?</v-card-title
-                        >
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="blue-darken-1"
-                            variant="text"
-                            @click="closeDelete"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            color="blue-darken-1"
-                            variant="text"
-                            @click="deleteItemConfirm"
-                            >OK</v-btn
-                          >
-                          <v-spacer></v-spacer>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
                     <template v-slot:item.actions="{ item }">
                       <v-icon
                         class="me-2"
@@ -77,7 +53,26 @@
         </v-card-text>
         <v-card-actions md="6">
           <v-spacer />
-
+          <v-dialog v-model="dialogDelete" max-width="550px">
+            <v-card>
+              <v-card-title class="text-h5"
+                >{{ $t("deleteInfo") }}</v-card-title
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="deleteItemConfirm"
+                  >{{ $t("yes") }}</v-btn
+                >
+                <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                  >{{ $t("no") }}</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <v-dialog
             v-model="Add"
             persistent
@@ -107,13 +102,15 @@
                       <v-text-field
                         v-model="newServer.name"
                         :label="$t('name') + '*'"
-                        :error="nameError"
+                        :error="nameError || duplicateNameError"
                         @blur="checkName"
                         required
                       ></v-text-field>
+                      <v-alert v-if="duplicateNameError" type="error">
+                        {{ $t("server") + $t(" ") +$t("exist") }}
+                      </v-alert>
                     </v-col>
 
-                    
                   </v-row>
                 </v-container>
                 <small>*{{ $t("required") }}</small>
@@ -146,9 +143,12 @@ import db from "~/data/db.json";
 export default {
   data() {
     return {
+      duplicateNameError: false,
       dialogDelete: false,
       search: "",
       Add: false,
+      Edit: false,
+      isEditing: false,
       headers: [
         { text: this.$t("ID"), value: "id" },
         { text: this.$t("name"), value: "name" },
@@ -157,9 +157,9 @@ export default {
         { text: this.$t("actions"), value: "actions", sortable: false },
       ],
       servers: db.servers,
-      servers: db.servers,
-      selectedApp: null,
+      filteredApplications: [...db.servers],
       newServer: {
+        id: null,
         name: "",
       },
       sortDirections: {
@@ -178,58 +178,127 @@ export default {
         this.nameError = true;
       } else {
         this.nameError = false;
+        if (this.checkDuplicateName()) {
+          this.duplicateNameError = true;
+        } else {
+          this.duplicateNameError = false;
+        }
+      }
+    },
+    checkServer() {
+      if (!this.newServer.serverName) {
+        this.serverError = true;
+        this.filteredApplications = [...this.servers];
+      } else {
+        this.serverError = false;
+        this.filteredApplications = this.servers.filter(
+          (app) => app.serverName === this.newServer.serverName
+        );
+      }
+    },
+    checkApp() {
+      if (!this.newServer.selectedServer) {
+        this.filteredApplications = this.servers;
+        this.newServer.selectedApp = null;
+      } else {
+        this.filteredApplications = this.servers.filter(
+          (app) => app.serverName === this.newServer.selectedServer
+        );
+        this.newServer.selectedApp = null;
       }
     },
     resetApp() {
       this.nameError = false;
       this.serverError = false;
       this.newServer.name = "";
+      this.isEditing = false;
+    },
+    checkDuplicateName() {
+      const serverNameLower = this.newServer.name.trim().toLowerCase();
+      return this.servers.some(
+        (server) =>
+          server.name.trim().toLowerCase() === serverNameLower &&
+          (!this.isEditing || server.id !== this.newServer.id)
+      );
     },
     save() {
-      const newId = Math.max(...this.servers.map((app) => app.id)) + 1;
+      if (this.checkDuplicateName()) {
+        this.duplicateNameError = true;
+        return;
+      }
 
-      const newApp = {
-        id: newId,
-        name: this.newServer.name,
-        last: new Date().toLocaleDateString(),
-        dataCreate: new Date().toLocaleDateString(),
-      };
+      this.duplicateNameError = false;
 
-      this.servers.push(newApp);
+      if (this.isEditing) {
+        const index = this.servers.findIndex(
+          (server) => server.id === this.newServer.id
+        );
+        if (index > -1) {
+          this.servers[index] = { ...this.newServer };
+        }
+      } else {
+        const newId = Math.max(...this.servers.map((app) => app.id)) + 1;
+
+        const newApp = {
+          id: newId,
+          name: this.newServer.name,
+          last: new Date().toLocaleDateString(),
+          dataCreate: new Date().toLocaleDateString(),
+          serverName: this.newServer.serverName,
+        };
+
+        this.servers.push(newApp);
+      }
+
+      this.servers = [...this.servers];
+
+      this.filteredApplications = this.servers.filter(
+        (app) => app.serverName === this.newServer.serverName
+      );
 
       this.resetApp();
+      this.checkServer();
+      this.checkApp();
 
       this.Add = false;
     },
     editItem(item) {
-      this.editedIndex = this.servers.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.newServer = { ...item };
+      this.isEditing = true;
+      this.Add = true;
+      this.checkServer();
+    },
+    deleteItem(item) {
+      this.selectedApp = item;
+      this.dialogDelete = true;
     },
 
-    deleteItem (item) {
-        this.editedIndex = this.servers.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
-      
     deleteItemConfirm() {
-    const index = this.servers.indexOf(this.selectedApp);
-    if (index > -1) {
-      this.servers.splice(index, 1);
-    }
-    this.dialogDelete = false;
-    this.selectedApp = null;
-  },
-  closeDelete() {
-    this.dialogDelete = false;
-    this.selectedApp = null;
-  },
+      const index = this.servers.indexOf(this.selectedApp);
+      if (index > -1) {
+        this.servers.splice(index, 1);
+      }
+      this.dialogDelete = false;
+      this.selectedApp = null;
+    },
+    closeDelete() {
+      this.dialogDelete = false;
+      this.selectedApp = null;
+    },
   },
   computed: {
     filtered() {
-      return this.servers.filter((app) => {
-        return app.name.toLowerCase().includes(this.search.toLowerCase());
+      return this.servers.filter((server) => {
+        const matchesSearch = server.name
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
+        const matchesServer =
+          !this.newServer.selectedServer ||
+          server.serverName === this.newServer.selectedServer;
+        const matchesApp =
+          !this.newServer.selectedApp ||
+          server.appName === this.newServer.selectedApp;
+        return matchesSearch && matchesServer && matchesApp;
       });
     },
   },

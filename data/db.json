@@ -1,4 +1,43 @@
 {
+  "servers": [
+    {
+      "id": 1000,
+      "name": "Server1",
+      "last": "16.05.2024",
+      "dataCreate": "12.05.2024"
+    },
+    {
+      "id": 1001,
+      "name": "WWW2",
+      "last": "14.05.2024",
+      "dataCreate": "11.05.2024"
+    },
+    {
+      "id": 1002,
+      "name": "AAA2",
+      "last": "15.05.2024",
+      "dataCreate": "10.05.2024"
+    },
+    {
+      "id": 1003,
+      "name": "Server2",
+      "last": "21.05.2024",
+      "dataCreate": "12.05.2024"
+    },
+    {
+      "id": 1004,
+      "name": "WWW1",
+      "last": "20.05.2024",
+      "dataCreate": "11.05.2024"
+    },
+    {
+      "id": 1005,
+      "name": "AAA",
+      "last": "15.05.2024",
+      "dataCreate": "15.05.2024"
+    }
+  ],
+
   "aplications": [
     {
       "id": 10000,
@@ -44,45 +83,6 @@
     }
   ],
 
-  "servers": [
-    {
-      "id": 1000,
-      "name": "Server1",
-      "last": "16.05.2024",
-      "dataCreate": "12.05.2024"
-    },
-    {
-      "id": 1001,
-      "name": "WWW2",
-      "last": "14.05.2024",
-      "dataCreate": "11.05.2024"
-    },
-    {
-      "id": 1002,
-      "name": "AAA2",
-      "last": "15.05.2024",
-      "dataCreate": "10.05.2024"
-    },
-    {
-      "id": 1003,
-      "name": "Server2",
-      "last": "21.05.2024",
-      "dataCreate": "12.05.2024"
-    },
-    {
-      "id": 1004,
-      "name": "WWW1",
-      "last": "20.05.2024",
-      "dataCreate": "11.05.2024"
-    },
-    {
-      "id": 1005,
-      "name": "AAA",
-      "last": "15.05.2024",
-      "dataCreate": "15.05.2024"
-    }
-  ],
-
   "tasks": [
     {
       "id": 100000,
@@ -90,7 +90,7 @@
       "last": "10.05.2024",
       "dataCreate": "01.05.2024",
       "serverName": "WWW2",
-      "appName": "Aplication2"
+      "appName": "App1"
     },
     {
       "id": 100001,
@@ -98,7 +98,7 @@
       "last": "11.05.2024",
       "dataCreate": "02.05.2024",
       "serverName": "Server2",
-      "appName": "App1"
+      "appName": "Aplication3"
     },
     {
       "id": 100002,
@@ -106,7 +106,7 @@
       "last": "12.05.2024",
       "dataCreate": "01.05.2024",
       "serverName": "WWW1",
-      "appName": "Aplication3"
+      "appName": "Aplication2"
     },
     {
       "id": 100003,
@@ -114,7 +114,7 @@
       "last": "13.05.2024",
       "dataCreate": "03.05.2024",
       "serverName": "AAA2",
-      "appName": "Aplication2"
+      "appName": "App2"
     },
     {
       "id": 100004,
@@ -122,7 +122,7 @@
       "last": "14.05.2024",
       "dataCreate": "04.05.2024",
       "serverName": "AAA",
-      "appName": "Aplication2"
+      "appName": ""
     },
     {
       "id": 100005,
@@ -130,7 +130,7 @@
       "last": "15.05.2024",
       "dataCreate": "05.05.2024",
       "serverName": "Server1",
-      "appName": "App1"
+      "appName": "Aplication1"
     },
     {
       "id": 100006,
@@ -138,7 +138,15 @@
       "last": "16.05.2024",
       "dataCreate": "06.05.2024",
       "serverName": "Server1",
-      "appName": "Aplication3"
+      "appName": "Aplikacja2"
+    },
+    {
+      "id": 100007,
+      "name": "Zadanie4",
+      "last": "16.05.2024",
+      "dataCreate": "16.05.2024",
+      "serverName": "WWW2",
+      "appName": ""
     }
   ]
 }

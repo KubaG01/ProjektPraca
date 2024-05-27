@@ -11,7 +11,7 @@
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
                   <v-layout row wrap class="pa-3">
-                    <v-flex md4>
+                    <v-flex md4 class="px-3">
                       <v-text-field
                         v-model="search"
                         :label="$t('search')"
@@ -19,38 +19,36 @@
                         variant="outlined"
                       ></v-text-field>
                     </v-flex>
+                    <v-flex md4 class="px-3">
+                      <v-select
+                        v-model="newTask.selectedServer"
+                        :items="servers"
+                        item-text="name"
+                        item-value="name"
+                        :label="$t('servers')"
+                        @change="checkApp"
+                        @blur="checkApp"
+                        clearable
+                      ></v-select>
+                    </v-flex>
+                    <v-flex md4 class="px-3">
+                      <v-select
+                        v-model="newTask.selectedApp"
+                        :items="filteredApplications"
+                        item-text="name"
+                        item-value="name"
+                        :label="$t('aplications')"
+                        clearable
+                      ></v-select>
+                    </v-flex>
                   </v-layout>
                   <v-divider :thickness="3" color="grey"></v-divider>
                   <v-data-table
                     :headers="headers"
                     :items="filtered"
                     hide-default-footer
+                    :items-per-page="-1"
                   >
-                    <v-dialog v-model="dialogDelete" max-width="500px">
-                      <v-card>
-                        <v-card-title class="text-h5"
-                          >Are you sure you want to delete this
-                          item?</v-card-title
-                        >
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="blue-darken-1"
-                            variant="text"
-                            @click="closeDelete"
-                            >Cancel</v-btn
-                          >
-                          <v-btn
-                            color="blue-darken-1"
-                            variant="text"
-                            @click="deleteItemConfirm"
-                            >OK</v-btn
-                          >
-                          <v-spacer></v-spacer>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
                     <template v-slot:item.actions="{ item }">
                       <v-icon
                         class="me-2"
@@ -77,7 +75,26 @@
         </v-card-text>
         <v-card-actions md="6">
           <v-spacer />
-
+          <v-dialog v-model="dialogDelete" max-width="550px">
+            <v-card>
+              <v-card-title class="text-h5"
+                >{{ $t("deleteInfo") }}</v-card-title
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="deleteItemConfirm"
+                  >{{ $t("yes") }}</v-btn
+                >
+                <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                  >{{ $t("no") }}</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <v-dialog
             v-model="Add"
             persistent
@@ -107,10 +124,13 @@
                       <v-text-field
                         v-model="newTask.name"
                         :label="$t('name') + '*'"
-                        :error="nameError"
+                        :error="nameError || duplicateNameError"
                         @blur="checkName"
                         required
                       ></v-text-field>
+                      <v-alert v-if="duplicateNameError" type="error">
+                        {{ $t("task") + $t(" ") +$t("exist") }}
+                      </v-alert>
                     </v-col>
 
                     <v-col cols="12" sm="6">
@@ -129,11 +149,12 @@
                     <v-col cols="12" sm="6">
                       <v-select
                         v-model="newTask.appName"
-                        :items="aplications"
+                        :items="filteredApplications"
                         item-text="name"
                         item-value="name"
                         :label="$t('aplication')"
-                        required
+                        :disabled="!newTask.serverName"
+                        clearable
                       ></v-select>
                     </v-col>
                   </v-row>
@@ -168,9 +189,14 @@ import db from "~/data/db.json";
 export default {
   data() {
     return {
+      duplicateNameError: false,
+      selectedServer: null,
+      selectedApp: null,
       dialogDelete: false,
       search: "",
       Add: false,
+      Edit: false,
+      isEditing: false,
       headers: [
         { text: this.$t("ID"), value: "id" },
         { text: this.$t("name"), value: "name" },
@@ -183,8 +209,9 @@ export default {
       tasks: db.tasks,
       servers: db.servers,
       aplications: db.aplications,
-      selectedApp: null,
+      filteredApplications: [...db.aplications],
       newTask: {
+        id: null,
         name: "",
         serverName: "",
         appName: "",
@@ -207,13 +234,33 @@ export default {
         this.nameError = true;
       } else {
         this.nameError = false;
+        if (this.checkDuplicateName()) {
+          this.duplicateNameError = true;
+        } else {
+          this.duplicateNameError = false;
+        }
       }
     },
     checkServer() {
       if (!this.newTask.serverName) {
         this.serverError = true;
+        this.filteredApplications = [...this.aplications];
       } else {
         this.serverError = false;
+        this.filteredApplications = this.aplications.filter(
+          (app) => app.serverName === this.newTask.serverName
+        );
+      }
+    },
+    checkApp() {
+      if (!this.newTask.selectedServer) {
+        this.filteredApplications = this.aplications;
+        this.newTask.selectedApp = null;
+      } else {
+        this.filteredApplications = this.aplications.filter(
+          (app) => app.serverName === this.newTask.selectedServer
+        );
+        this.newTask.selectedApp = null;
       }
     },
     resetApp() {
@@ -222,54 +269,97 @@ export default {
       this.newTask.name = "";
       this.newTask.serverName = "";
       this.newTask.appName = "";
+      this.newTask.selectedServer = "";
+      this.newTask.selectedApp = "";
+      this.isEditing = false;
+    },
+    checkDuplicateName() {
+      const taskNameLower = this.newTask.name.trim().toLowerCase();
+      return this.tasks.some(
+        (task) =>
+          task.name.trim().toLowerCase() === taskNameLower &&
+          (!this.isEditing || task.id !== this.newTask.id)
+      );
     },
     save() {
-      const newId = Math.max(...this.tasks.map((app) => app.id)) + 1;
+      if (this.checkDuplicateName()) {
+        this.duplicateNameError = true;
+        return;
+      }
 
-      const newApp = {
-        id: newId,
-        name: this.newTask.name,
-        last: new Date().toLocaleDateString(),
-        dataCreate: new Date().toLocaleDateString(),
-        serverName: this.newTask.serverName,
-        appName: this.newTask.appName,
-      };
+      this.duplicateNameError = false;
 
-      this.tasks.push(newApp);
+      if (this.isEditing) {
+        const index = this.tasks.findIndex(
+          (task) => task.id === this.newTask.id
+        );
+        if (index > -1) {
+          this.tasks[index] = { ...this.newTask };
+        }
+      } else {
+        const newId = Math.max(...this.tasks.map((app) => app.id)) + 1;
+
+        const newApp = {
+          id: newId,
+          name: this.newTask.name,
+          last: new Date().toLocaleDateString(),
+          dataCreate: new Date().toLocaleDateString(),
+          serverName: this.newTask.serverName,
+          appName: this.newTask.appName,
+        };
+
+        this.tasks.push(newApp);
+      }
+
+      this.tasks = [...this.tasks];
+
+      this.filteredApplications = this.aplications.filter(
+        (app) => app.serverName === this.newTask.serverName
+      );
 
       this.resetApp();
+      this.checkServer();
+      this.checkApp();
 
       this.Add = false;
     },
     editItem(item) {
-      this.editedIndex = this.tasks.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.newTask = { ...item };
+      this.isEditing = true;
+      this.Add = true;
+      this.checkServer();
+    },
+    deleteItem(item) {
+      this.selectedApp = item;
+      this.dialogDelete = true;
     },
 
-    deleteItem (item) {
-        this.editedIndex = this.tasks.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
-      
     deleteItemConfirm() {
-    const index = this.tasks.indexOf(this.selectedApp);
-    if (index > -1) {
-      this.tasks.splice(index, 1);
-    }
-    this.dialogDelete = false;
-    this.selectedApp = null;
-  },
-  closeDelete() {
-    this.dialogDelete = false;
-    this.selectedApp = null;
-  },
+      const index = this.tasks.indexOf(this.selectedApp);
+      if (index > -1) {
+        this.tasks.splice(index, 1);
+      }
+      this.dialogDelete = false;
+      this.selectedApp = null;
+    },
+    closeDelete() {
+      this.dialogDelete = false;
+      this.selectedApp = null;
+    },
   },
   computed: {
     filtered() {
-      return this.tasks.filter((app) => {
-        return app.name.toLowerCase().includes(this.search.toLowerCase());
+      return this.tasks.filter((task) => {
+        const matchesSearch = task.name
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
+        const matchesServer =
+          !this.newTask.selectedServer ||
+          task.serverName === this.newTask.selectedServer;
+        const matchesApp =
+          !this.newTask.selectedApp ||
+          task.appName === this.newTask.selectedApp;
+        return matchesSearch && matchesServer && matchesApp;
       });
     },
   },

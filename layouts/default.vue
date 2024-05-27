@@ -30,11 +30,7 @@
       </v-btn>
 
       <v-spacer />
-      <!--
-      <v-btn @click="changeLanguage('en')" color="primary">EN</v-btn>
-      <v-btn @click="changeLanguage('pl')" color="primary">PL</v-btn>
-       <LangSwitcher /> 
-      -->
+      <LangSwitcher />
     </v-app-bar>
     <v-main>
       <v-container>
@@ -83,14 +79,8 @@ export default {
   },
   methods: {
     localizedPath(path) {
-      const prefix =
-        this.$i18n.locale !== this.$i18n.defaultLocale
-          ? `/${this.$i18n.locale}/`
-          : "";
+      const prefix = this.$i18n.locale ? `/${this.$i18n.locale}/` : "";
       return `${prefix}${path}`;
-    },
-    changeLanguage(lang) {
-      this.$i18n.locale = this.$i18n.lang;
     },
   },
   components: {

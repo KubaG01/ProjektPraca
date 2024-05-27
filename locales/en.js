@@ -2,7 +2,7 @@ import en from 'vuetify/es5/locale/en';
 export default {
   $vuetify: en,
   servers: 'Servers',
-  aplications: 'Aplications',
+  aplications: 'Applications',
   tasks: 'Tasks',
   add: 'Add',
   required: 'Required',
@@ -13,11 +13,15 @@ export default {
   delete: 'Delete',
   name: 'Name',
   server: 'Server',
-  aplication: 'Aplication',
+  aplication: 'Application',
   task: 'Task',
   ID: 'ID',
   last: 'Last Modification',
   dataCreate: 'Creation Date',
   actions: 'Actions',
-  project: "Project for Olek"
+  project: "Project for Olek",
+  exist: "with this name already exists.",
+  deleteInfo: "Are you sure you want to delete this item?",
+  yes: "YES",
+  no: "NO"
 }

@@ -20,5 +20,9 @@ export default {
   last: 'Ostatnia Modyfikacja',
   dataCreate: 'Data Utworzenia',
   actions: 'Akcje',
-  project: "Projekt dla Olka"
+  project: "Projekt dla Olka",
+  exist: "z taką nazwą już istnieje.",
+  deleteInfo: "Czy na pewno chcesz usunąć ten element?",
+  yes: "TAK",
+  no: "NIE"
 }
