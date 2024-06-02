@@ -5,7 +5,7 @@ import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
 const _4f6071a3 = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages/index" */))
-const _5dc50366 = () => interopDefault(import('..\\pages\\aplications.vue' /* webpackChunkName: "pages/aplications" */))
+const _040edce2 = () => interopDefault(import('..\\pages\\applications.vue' /* webpackChunkName: "pages/applications" */))
 const _8880edbe = () => interopDefault(import('..\\pages\\servers.vue' /* webpackChunkName: "pages/servers" */))
 const _e953f342 = () => interopDefault(import('..\\pages\\tasks.vue' /* webpackChunkName: "pages/tasks" */))
 
@@ -29,9 +29,9 @@ export const routerOptions = {
     component: _4f6071a3,
     name: "index___pl"
   }, {
-    path: "/en/aplications",
-    component: _5dc50366,
-    name: "aplications___en"
+    path: "/en/applications",
+    component: _040edce2,
+    name: "applications___en"
   }, {
     path: "/en/servers",
     component: _8880edbe,
@@ -41,9 +41,9 @@ export const routerOptions = {
     component: _e953f342,
     name: "tasks___en"
   }, {
-    path: "/pl/aplications",
-    component: _5dc50366,
-    name: "aplications___pl"
+    path: "/pl/applications",
+    component: _040edce2,
+    name: "applications___pl"
   }, {
     path: "/pl/servers",
     component: _8880edbe,

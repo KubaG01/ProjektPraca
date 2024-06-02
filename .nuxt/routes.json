@@ -14,11 +14,11 @@
     "_name": "_4f6071a3"
   },
   {
-    "name": "aplications___en",
-    "path": "/en/aplications",
-    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\aplications.vue",
-    "chunkName": "pages/aplications",
-    "_name": "_5dc50366"
+    "name": "applications___en",
+    "path": "/en/applications",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\applications.vue",
+    "chunkName": "pages/applications",
+    "_name": "_040edce2"
   },
   {
     "name": "servers___en",
@@ -35,11 +35,11 @@
     "_name": "_e953f342"
   },
   {
-    "name": "aplications___pl",
-    "path": "/pl/aplications",
-    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\aplications.vue",
-    "chunkName": "pages/aplications",
-    "_name": "_5dc50366"
+    "name": "applications___pl",
+    "path": "/pl/applications",
+    "component": "D:\\\\Praca\\\\ProjektPraca\\\\pages\\\\applications.vue",
+    "chunkName": "pages/applications",
+    "_name": "_040edce2"
   },
   {
     "name": "servers___pl",

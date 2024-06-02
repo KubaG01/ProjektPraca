@@ -6,5 +6,11 @@ You can directly use them in pages and other components without the need to impo
 
 **Tip:** If a component is conditionally rendered with `v-if` and is big, it is better to use `Lazy` or `lazy-` prefix to lazy load.
 
+- `<ItemAdd>` | `<item-add>` (components/ItemAdd.vue)
+- `<ItemDelete>` | `<item-delete>` (components/ItemDelete.vue)
+- `<ItemFilter>` | `<item-filter>` (components/ItemFilter.vue)
+- `<ItemSearch>` | `<item-search>` (components/ItemSearch.vue)
+- `<ItemTable>` | `<item-table>` (components/ItemTable.vue)
 - `<LangSwitcher>` | `<lang-switcher>` (components/LangSwitcher.vue)
+- `<ServerSelect>` | `<server-select>` (components/ServerSelect.vue)
 - `<Tutorial>` | `<tutorial>` (components/Tutorial.vue)

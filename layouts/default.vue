@@ -39,7 +39,7 @@
     </v-main>
 
     <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+      <span>&copy; Jakub Głąbiak {{  new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
 </template>
@@ -62,8 +62,8 @@ export default {
         },
         {
           icon: "mdi-application-braces",
-          title: this.$t("aplications"),
-          to: "aplications",
+          title: this.$t("applications"),
+          to: "applications",
         },
         {
           icon: "mdi-calendar-check-outline",

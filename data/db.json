@@ -38,24 +38,24 @@
     }
   ],
 
-  "aplications": [
+  "applications": [
     {
       "id": 10000,
-      "name": "Aplication1",
+      "name": "application1",
       "last": "15.05.2024",
       "dataCreate": "10.05.2024",
       "serverName": "Server1"
     },
     {
       "id": 10001,
-      "name": "Aplication2",
+      "name": "application2",
       "last": "20.05.2024",
       "dataCreate": "09.05.2024",
       "serverName": "WWW1"
     },
     {
       "id": 10002,
-      "name": "Aplication3",
+      "name": "application3",
       "last": "15.05.2024",
       "dataCreate": "10.05.2024",
       "serverName": "Server2"
@@ -98,7 +98,7 @@
       "last": "11.05.2024",
       "dataCreate": "02.05.2024",
       "serverName": "Server2",
-      "appName": "Aplication3"
+      "appName": "application3"
     },
     {
       "id": 100002,
@@ -106,7 +106,7 @@
       "last": "12.05.2024",
       "dataCreate": "01.05.2024",
       "serverName": "WWW1",
-      "appName": "Aplication2"
+      "appName": "application2"
     },
     {
       "id": 100003,
@@ -130,7 +130,7 @@
       "last": "15.05.2024",
       "dataCreate": "05.05.2024",
       "serverName": "Server1",
-      "appName": "Aplication1"
+      "appName": "application1"
     },
     {
       "id": 100006,

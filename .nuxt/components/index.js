@@ -1,4 +1,10 @@
+export { default as ItemAdd } from '../..\\components\\ItemAdd.vue'
+export { default as ItemDelete } from '../..\\components\\ItemDelete.vue'
+export { default as ItemFilter } from '../..\\components\\ItemFilter.vue'
+export { default as ItemSearch } from '../..\\components\\ItemSearch.vue'
+export { default as ItemTable } from '../..\\components\\ItemTable.vue'
 export { default as LangSwitcher } from '../..\\components\\LangSwitcher.vue'
+export { default as ServerSelect } from '../..\\components\\ServerSelect.vue'
 export { default as Tutorial } from '../..\\components\\Tutorial.vue'
 
 // nuxt/nuxt.js#8607

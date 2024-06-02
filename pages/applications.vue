@@ -3,7 +3,7 @@
     <v-col cols="12" sm="10">
       <v-card>
         <v-card-title class="headline ma-4">
-          {{ $t("aplications") }}
+          {{ $t("applications") }}
         </v-card-title>
         <v-card-text>
           <v-layout row>
@@ -11,34 +11,45 @@
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
                   <v-layout row wrap class="pa-3">
-                    <v-flex md4 class="px-3">
-                      <v-text-field
-                        v-model="search"
-                        :label="$t('search')"
-                        prepend-inner-icon="mdi-magnify"
-                        variant="outlined"
-                      ></v-text-field>
+                    <v-flex md6 class="px-3">
+                      <ItemSearch v-model="search" />
                     </v-flex>
-                    <v-flex md4 class="px-3">
-                      <v-select
-                        v-model="newApplication.selectedServer"
-                        :items="servers"
-                        item-text="name"
-                        item-value="name"
-                        :label="$t('servers')"
-                        @change="checkApp"
-                        @blur="checkApp"
-                        clearable
-                      ></v-select>
+                    <v-flex md6 class="px-3">
+                      <ServerSelect
+                        v-model="selectedServer"
+                        :servers="servers"
+                      />
                     </v-flex>
                   </v-layout>
                   <v-divider :thickness="3" color="grey"></v-divider>
                   <v-data-table
                     :headers="headers"
                     :items="filtered"
-                    hide-default-footer
-                    :items-per-page="-1"
+                    :items-per-page="itemsPerPage"
+                    :page.sync="page"
+                    :server-items-length="totalItems"
+                    :sort-by.sync="sortBy"
+                    :sort-desc.sync="sortDesc"
+                    :footer-props="{
+                      'items-per-page-options': [5, 10, 15, 20, 50, -1],
+                      'items-per-page-text': $t('itemsPerPage'),
+                      'items-per-page-all-text': $t('all'),
+                      'pagination-text': paginationText,
+                    }"
+                    :no-data-text="$t('noData')"
+                    @update:items-per-page="updateItemsPerPage"
                   >
+                    <template
+                      v-slot:footer.page-text="{
+                        pageStart,
+                        pageStop,
+                        itemsLength,
+                      }"
+                    >
+                      {{ pageStart }}-{{ pageStop }} {{ $t("of") }}
+                      {{ itemsLength }}
+                    </template>
+
                     <template v-slot:item.actions="{ item }">
                       <v-icon
                         class="me-2"
@@ -50,7 +61,10 @@
                       </v-icon>
                       <v-icon
                         size="small"
-                        @click="deleteItem(item)"
+                        @click="
+                          dialogDelete = true;
+                          selectedItem = item;
+                        "
                         color="error"
                       >
                         mdi-delete
@@ -67,9 +81,20 @@
           <v-spacer />
           <v-dialog v-model="dialogDelete" max-width="550px">
             <v-card>
-              <v-card-title class="text-h5"
-                >{{ $t("deleteInfo") }}</v-card-title
-              >
+              <v-card-title class="text-h5">{{
+                $t("deleteInfo")
+              }}</v-card-title>
+
+              <v-card-text>
+                <ul>
+                  <li>{{ $t("ID") }}: {{ selectedItem.id }}</li>
+                  <li>{{ $t("name") }}: {{ selectedItem.name }}</li>
+                  <li>{{ $t("server") }}: {{ selectedItem.serverName }}</li>
+                  <li>{{ $t("last") }}: {{ selectedItem.last }}</li>
+                  <li>{{ $t("dataCreate") }}: {{ selectedItem.dataCreate }}</li>
+                </ul>
+              </v-card-text>
+
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
@@ -78,7 +103,10 @@
                   @click="deleteItemConfirm"
                   >{{ $t("yes") }}</v-btn
                 >
-                <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="dialogDelete = false"
                   >{{ $t("no") }}</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -104,7 +132,7 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="text-h5">{{ $t("aplications") }}</span>
+                <span class="text-h5">{{ $t("newApp") }}</span>
               </v-card-title>
 
               <v-card-text>
@@ -112,20 +140,20 @@
                   <v-row>
                     <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="newApplication.name"
+                        v-model="newItem.name"
                         :label="$t('name') + '*'"
                         :error="nameError || duplicateNameError"
                         @blur="checkName"
                         required
                       ></v-text-field>
                       <v-alert v-if="duplicateNameError" type="error">
-                        {{ $t("aplication") + $t(" ") +$t("exist") }}
+                        {{ $t("application") + " " + $t("exist") }}
                       </v-alert>
                     </v-col>
 
                     <v-col cols="12" sm="6">
                       <v-select
-                        v-model="newApplication.serverName"
+                        v-model="newItem.serverName"
                         :items="servers"
                         item-text="name"
                         item-value="name"
@@ -145,7 +173,7 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  :disabled="!newApplication.name || !newApplication.serverName"
+                  :disabled="!newItem.name || !newItem.serverName"
                   @click="save"
                 >
                   {{ $t("save") }}
@@ -168,9 +196,15 @@ import db from "~/data/db.json";
 export default {
   data() {
     return {
+      sortBy: "id",
+      sortDesc: false,
+      itemsPerPage: 5,
+      page: 1,
+      totalItems: 0,
       duplicateNameError: false,
       selectedServer: null,
       dialogDelete: false,
+      selectedItem: "",
       search: "",
       Add: false,
       Edit: false,
@@ -180,13 +214,12 @@ export default {
         { text: this.$t("name"), value: "name" },
         { text: this.$t("last"), value: "last" },
         { text: this.$t("dataCreate"), value: "dataCreate" },
-        { text: this.$t("server"), value: "serverName" },
+        { text: this.$t("servers"), value: "serverName" },
         { text: this.$t("actions"), value: "actions", sortable: false },
       ],
-      aplications: db.aplications,
+      applications: db.applications,
       servers: db.servers,
-      filteredApplications: [...db.aplications],
-      newApplication: {
+      newItem: {
         id: null,
         name: "",
         serverName: "",
@@ -204,7 +237,7 @@ export default {
   },
   methods: {
     checkName() {
-      if (!this.newApplication.name.trim()) {
+      if (!this.newItem.name.trim()) {
         this.nameError = true;
       } else {
         this.nameError = false;
@@ -216,41 +249,25 @@ export default {
       }
     },
     checkServer() {
-      if (!this.newApplication.serverName) {
+      if (!this.newItem.serverName) {
         this.serverError = true;
-        this.filteredApplications = [...this.aplications];
       } else {
         this.serverError = false;
-        this.filteredApplications = this.aplications.filter(
-          (app) => app.serverName === this.newApplication.serverName
-        );
-      }
-    },
-    checkApp() {
-      if (!this.newApplication.selectedServer) {
-        this.filteredApplications = this.aplications;
-        this.newApplication.selectedApp = null;
-      } else {
-        this.filteredApplications = this.aplications.filter(
-          (app) => app.serverName === this.newApplication.selectedServer
-        );
-        this.newApplication.selectedApp = null;
       }
     },
     resetApp() {
       this.nameError = false;
       this.serverError = false;
-      this.newApplication.name = "";
-      this.newApplication.serverName = "";
-      this.newApplication.selectedServer = "";
+      this.newItem.name = "";
+      this.newItem.serverName = "";
       this.isEditing = false;
     },
     checkDuplicateName() {
-      const aplicationNameLower = this.newApplication.name.trim().toLowerCase();
-      return this.aplications.some(
-        (task) =>
-          task.name.trim().toLowerCase() === taskNameLower &&
-          (!this.isEditing || task.id !== this.newApplication.id)
+      const itemNameLower = this.newItem.name.trim().toLowerCase();
+      return this.applications.some(
+        (item) =>
+          item.name.trim().toLowerCase() === itemNameLower &&
+          (!this.isEditing || item.id !== this.newItem.id)
       );
     },
     save() {
@@ -258,80 +275,129 @@ export default {
         this.duplicateNameError = true;
         return;
       }
+      const SS = this.selectedServer;
 
       this.duplicateNameError = false;
 
       if (this.isEditing) {
-        const index = this.aplications.findIndex(
-          (task) => task.id === this.newApplication.id
+        const index = this.applications.findIndex(
+          (item) => item.id === this.newItem.id
         );
         if (index > -1) {
-          this.aplications[index] = { ...this.newApplication };
+          this.applications[index] = {
+            ...this.newItem,
+            last: new Date().toLocaleDateString(),
+          };
         }
       } else {
-        const newId = Math.max(...this.aplications.map((app) => app.id)) + 1;
+        const newId = Math.max(...this.applications.map((item) => item.id)) + 1;
 
-        const newApp = {
+        const newItem = {
           id: newId,
-          name: this.newApplication.name,
+          name: this.newItem.name,
           last: new Date().toLocaleDateString(),
           dataCreate: new Date().toLocaleDateString(),
-          serverName: this.newApplication.serverName,
+          serverName: this.newItem.serverName,
         };
 
-        this.aplications.push(newApp);
+        this.applications.push(newItem);
+
+        if (!(this.itemsPerPage == -1))
+          this.page = Math.ceil((this.totalItems + 1) / this.itemsPerPage);
       }
 
-      this.aplications = [...this.aplications];
-
-      this.filteredApplications = this.aplications.filter(
-        (app) => app.serverName === this.newApplication.serverName
+      this.filteredItem = this.applications.filter(
+        (app) => app.serverName === this.newItem.serverName
       );
 
+      this.applications = [...this.applications];
       this.resetApp();
-      this.checkServer();
-      this.checkApp();
+      this.selectedServer = SS;
 
+      this.saveDataToJSON();
       this.Add = false;
     },
     editItem(item) {
-      this.newApplication = { ...item };
+      this.newItem = { ...item };
       this.isEditing = true;
       this.Add = true;
       this.checkServer();
     },
-    deleteItem(item) {
-      this.selectedApp = item;
-      this.dialogDelete = true;
-    },
-
     deleteItemConfirm() {
-      const index = this.aplications.indexOf(this.selectedApp);
+      const index = this.applications.indexOf(this.selectedItem);
       if (index > -1) {
-        this.aplications.splice(index, 1);
+        this.applications.splice(index, 1);
+
+        const lastItemIndexOnPage = (this.page - 1) * this.itemsPerPage;
+        if (this.totalItems - 1 == lastItemIndexOnPage && this.page > 1) {
+          this.page -= 1;
+        }
       }
+
+      this.saveDataToJSON();
+
+      this.selectedItem = "";
       this.dialogDelete = false;
-      this.selectedApp = null;
     },
-    closeDelete() {
-      this.dialogDelete = false;
-      this.selectedApp = null;
+    updateItemsPerPage(value) {
+      this.itemsPerPage = value;
+      this.page = 1;
+    },
+    paginationText() {
+      const start = (this.page - 1) * this.itemsPerPage + 1;
+      const end = Math.min(start + this.itemsPerPage - 1, this.totalItems);
+      const text = `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
+      return text;
+    },
+    async saveDataToJSON() {
+      try {
+      } catch (error) {
+        console.error("Failed to save data to JSON", error);
+      }
     },
   },
   computed: {
     filtered() {
-      return this.aplications.filter((task) => {
-        const matchesSearch = task.name
+      if (this.search === null) {
+        this.search = "";
+      }
+
+      let filteredItem = this.applications.filter((item) => {
+        const matchesSearch = item.name
           .toLowerCase()
           .includes(this.search.toLowerCase());
         const matchesServer =
-          !this.newApplication.selectedServer ||
-          task.serverName === this.newApplication.selectedServer;
-        const matchesApp =
-          !this.newApplication.selectedApp ||
-          task.appName === this.newApplication.selectedApp;
-        return matchesSearch && matchesServer && matchesApp;
+          !this.selectedServer || item.serverName === this.selectedServer;
+
+        return matchesSearch && matchesServer;
       });
+
+      if (this.sortBy) {
+        filteredItem = filteredItem.sort((a, b) => {
+          const sortA = String(a[this.sortBy]).toLowerCase();
+          const sortB = String(b[this.sortBy]).toLowerCase();
+          if (sortA < sortB) return this.sortDesc ? 1 : -1;
+          if (sortA > sortB) return this.sortDesc ? -1 : 1;
+          return 0;
+        });
+      }
+
+      this.totalItems = filteredItem.length;
+      const start = (this.page - 1) * this.itemsPerPage;
+      let end = start + this.itemsPerPage;
+
+      if (this.itemsPerPage === -1) {
+        end = this.totalItems;
+      }
+
+      return filteredItem.slice(start, end);
+    },
+  },
+  watch: {
+    selectedServer: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.page = 1;
+      }
     },
   },
 };

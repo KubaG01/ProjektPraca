@@ -18,9 +18,11 @@ export default {
         const currentPath = this.$router.currentRoute.path;
         const newPath = `/${lang}${currentPath.substr(3)}`;
         
-        await this.$router.replace(newPath);
-        window.location.reload();
+        await this.$router.push(newPath);
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
+        window.location.reload();
       }
     },
   },
