@@ -8,19 +8,10 @@
   "ItemFilter": {
     "description": "Auto imported from components/ItemFilter.vue"
   },
-  "ItemSearch": {
-    "description": "Auto imported from components/ItemSearch.vue"
-  },
   "ItemTable": {
     "description": "Auto imported from components/ItemTable.vue"
   },
   "LangSwitcher": {
     "description": "Auto imported from components/LangSwitcher.vue"
-  },
-  "ServerSelect": {
-    "description": "Auto imported from components/ServerSelect.vue"
-  },
-  "Tutorial": {
-    "description": "Auto imported from components/Tutorial.vue"
   }
 }

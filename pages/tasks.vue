@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center" align="center">
-    <v-col cols="12" sm="10">
+    <v-col cols="12" sm="11">
       <v-card>
         <v-card-title class="headline ma-4">
           {{ $t("tasks") }}
@@ -10,38 +10,32 @@
             <v-flex>
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
-                  <v-layout row wrap class="pa-3">
-                    <v-flex md4 class="px-3">
-                      <ItemSearch
-                        v-model:search="search"
-                        @update:search="search = $event"
-                      />
-                    </v-flex>
-                    <v-flex md4 class="px-3">
-                      <v-select
-                        v-model="selectedServer"
-                        :items="servers"
-                        item-text="name"
-                        item-value="name"
-                        :label="$t('servers')"
-                        @change="checkApp"
-                        @blur="checkApp"
-                        clearable
-                      ></v-select>
-                    </v-flex>
-                    <v-flex md4 class="px-3">
-                      <v-select
-                        v-model="selectedApp"
-                        :items="filteredApplications"
-                        item-text="name"
-                        item-value="name"
-                        :label="$t('applications')"
-                        :no-data-text="$t('noData')"
-                        clearable
-                      ></v-select>
-                    </v-flex>
-                  </v-layout>
+                  <ItemFilter
+                    :search="search"
+                    :selectedServer="selectedServer"
+                    :selectedApp="selectedApp"
+                    :servers="servers"
+                    :applications="applications"
+                    @update:search="search = $event"
+                    @update:selectedServer="selectedServer = $event"
+                    @update:selectedApp="selectedApp = $event"
+                  />
                   <v-divider :thickness="3" color="grey"></v-divider>
+                  <!-- <ItemTable
+                    :headers="headers"
+                    :filtered="filtered"
+                    :items-per-page="itemsPerPage"
+                    :page.sync="page"
+                    :totalItems="totalItems"
+                    :sort-by="sortBy"
+                    :sort-desc="sortDesc"
+                    @update:items-per-page="updateItemsPerPage"
+                    @edit-item="editItem"
+                    @delete-item="deleteItem"
+                    @update:sortBy="updateSortBy"
+                    @update:sortDesc="updateSortDesc"
+                    @update:page="page = $event"
+                  /> -->
                   <v-data-table
                     :headers="headers"
                     :items="filtered"
@@ -60,7 +54,7 @@
                     @update:items-per-page="updateItemsPerPage"
                   >
                     <template
-                      v-slot:footer.page-text="{
+                      v-slot:[`footer.page-text`]="{
                         pageStart,
                         pageStop,
                         itemsLength,
@@ -70,7 +64,7 @@
                       {{ itemsLength }}
                     </template>
 
-                    <template v-slot:item.actions="{ item }">
+                    <template v-slot:[`item.actions`]="{ item }">
                       <v-icon
                         class="me-2"
                         size="small"
@@ -99,43 +93,26 @@
         </v-card-text>
         <v-card-actions md="6">
           <v-spacer />
-          <v-dialog v-model="dialogDelete" max-width="550px">
-            <v-card>
-              <v-card-title class="text-h5">{{
-                $t("deleteInfo")
-              }}</v-card-title>
 
-              <v-card-text>
-                <ul>
-                  <li>{{ $t("ID") }}: {{ selectedItem.id }}</li>
-                  <li>{{ $t("name") }}: {{ selectedItem.name }}</li>
-                  <li>{{ $t("server") }}: {{ selectedItem.serverName }}</li>
-                  <li>{{ $t("application") }}: {{ selectedItem.appName }}</li>
-                  <li>{{ $t("last") }}: {{ selectedItem.last }}</li>
-                  <li>{{ $t("dataCreate") }}: {{ selectedItem.dataCreate }}</li>
-                </ul>
-              </v-card-text>
+          <ItemDelete
+            :dialogDelete="dialogDelete"
+            :selectedItem="selectedItem"
+            @deleteItemConfirm="deleteItemConfirm"
+            @closeDialog="closeDeleteDialog"
+          />
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="deleteItemConfirm"
-                  >{{ $t("yes") }}</v-btn
-                >
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="dialogDelete = false"
-                  >{{ $t("no") }}</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <!-- <ItemAdd
+            :dialogAdd="dialogAdd"
+            :newItem="newItem"
+            :servers="servers"
+            :filteredAppsByServer="filteredAppsByServer"
+            :nameError="nameError"
+            :duplicateNameError="duplicateNameError"
+            :serverError="serverError"
+          /> -->
+
           <v-dialog
-            v-model="Add"
+            v-model="dialogAdd"
             persistent
             max-width="800px"
             @input="resetApp"
@@ -210,7 +187,7 @@
                 >
                   {{ $t("save") }}
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="Add = false">
+                <v-btn color="blue darken-1" text @click="dialogAdd = false">
                   {{ $t("close") }}
                 </v-btn>
               </v-card-actions>
@@ -224,11 +201,13 @@
   
 <script>
 import db from "~/data/db.json";
-import ItemSearch from "~/components/ItemSearch.vue";
 import ItemFilter from "~/components/ItemFilter.vue";
+import ItemDelete from "~/components/ItemDelete.vue";
+import ItemAdd from "~/components/ItemAdd.vue";
+import ItemTable from "~/components/ItemTable.vue";
 
 export default {
-  components: { ItemSearch, ItemFilter },
+  components: { ItemFilter, ItemDelete, ItemTable, ItemAdd },
   data() {
     return {
       sortBy: "id",
@@ -240,10 +219,9 @@ export default {
       selectedServer: null,
       selectedApp: null,
       dialogDelete: false,
-      selectedItem: "",
+      selectedItem: {},
       search: "",
-      Add: false,
-      Edit: false,
+      dialogAdd: false,
       isEditing: false,
       headers: [
         { text: this.$t("ID"), value: "id" },
@@ -255,8 +233,10 @@ export default {
         { text: this.$t("actions"), value: "actions", sortable: false },
       ],
       tasks: db.tasks,
-      servers: db.servers,
-      applications: db.applications,
+      servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
+      applications: db.applications.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      ),
       filteredApplications: [...db.applications],
       filteredAppsByServer: [...db.applications],
       newItem: {
@@ -275,7 +255,7 @@ export default {
       },
       nameError: false,
       serverError: false,
-      formattedDate: ''
+      formattedDate: "",
     };
   },
   methods: {
@@ -302,17 +282,6 @@ export default {
         );
       }
     },
-    checkApp() {
-      if (!this.selectedServer) {
-        this.filteredApplications = this.applications;
-        this.selectedApp = "";
-      } else {
-        this.filteredApplications = this.applications.filter(
-          (app) => app.serverName === this.selectedServer
-        );
-        this.selectedApp = "";
-      }
-    },
     resetApp() {
       this.nameError = false;
       this.serverError = false;
@@ -332,8 +301,8 @@ export default {
     },
     getDate() {
       const currentDate = new Date();
-      const day = String(currentDate.getDate()).padStart(2, '0');
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, "0");
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
       const year = currentDate.getFullYear();
       return `${day}.${month}.${year}`;
     },
@@ -398,14 +367,20 @@ export default {
       this.selectedApp = SA;
       this.selectedServer = SS;
 
-      this.saveDataToJSON();
-      this.Add = false;
+      this.dialogAdd = false;
     },
     editItem(item) {
       this.newItem = { ...item };
       this.isEditing = true;
-      this.Add = true;
+      this.dialogAdd = true;
       this.checkServer();
+    },
+    deleteItem(item) {
+      this.selectedItem = item;
+      this.dialogDelete = true;
+    },
+    closeDeleteDialog() {
+      this.dialogDelete = false;
     },
     deleteItemConfirm() {
       const index = this.tasks.indexOf(this.selectedItem);
@@ -418,28 +393,27 @@ export default {
         }
       }
 
-      this.saveDataToJSON();
-
-      this.selectedItem = "";
+      this.selectedItem = {};
       this.dialogDelete = false;
+    },
+    closeDeleteAdd() {
+      this.dialogAdd = false;
     },
     updateItemsPerPage(value) {
       this.itemsPerPage = value;
       this.page = 1;
     },
+    updateSortBy(val) {
+      this.sortBy = val;
+    },
+    updateSortDesc(val) {
+      this.sortDesc = val;
+    },
     paginationText() {
-      const start = (this.page - 1) * this.itemsPerPage + 1;
-      const end = Math.min(start + this.itemsPerPage - 1, this.totalItems);
-      const text = `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
-      return text;
-    },
-    async saveDataToJSON() {
-      try {
-        
-      } catch (error) {
-        console.error("Failed to save data to JSON", error);
-      }
-    },
+    const start = (this.page - 1) * this.itemsPerPage + 1;
+    const end = Math.min(start + this.itemsPerPage - 1, this.totalItems);
+    return `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
+  },
   },
   computed: {
     filtered() {
@@ -479,6 +453,7 @@ export default {
       return filteredItem.slice(start, end);
     },
   },
+  
   watch: {
     selectedServer: function (newVal, oldVal) {
       if (newVal !== oldVal) {
@@ -491,10 +466,10 @@ export default {
       }
     },
     search(newVal, oldVal) {
-    if (newVal !== oldVal) {
-      this.page = 1;
-    }
-  },
+      if (newVal !== oldVal) {
+        this.page = 1;
+      }
+    },
   },
 };
 </script>

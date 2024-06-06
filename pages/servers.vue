@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center" align="center">
-    <v-col cols="12" sm="10">
+    <v-col cols="12" sm="11">
       <v-card>
         <v-card-title class="headline ma-4">
           {{ $t("servers") }}
@@ -10,18 +10,26 @@
             <v-flex>
               <v-container fluid class="my-5">
                 <v-card class="pa-3">
-                  <v-layout row wrap class="pa-3">
-                    <v-flex md6 class="px-3">
-                      <v-text-field
-                        v-model="search"
-                        :label="$t('search')"
-                        prepend-inner-icon="mdi-magnify"
-                        variant="outlined"
-                        clearable
-                      ></v-text-field>
-                    </v-flex>
-                  </v-layout>
+                  <ItemFilter
+                    :search="search"
+                    @update:search="search = $event"
+                  />
                   <v-divider :thickness="3" color="grey"></v-divider>
+                  <!-- <ItemTable
+                    :headers="headers"
+                    :filtered="filtered"
+                    :items-per-page="itemsPerPage"
+                    :page.sync="page"
+                    :totalItems="totalItems"
+                    :sort-by="sortBy"
+                    :sort-desc="sortDesc"
+                    @update:items-per-page="updateItemsPerPage"
+                    @edit-item="editItem"
+                    @delete-item="deleteItem"
+                    @update:sortBy="updateSortBy"
+                    @update:sortDesc="updateSortDesc"
+                    @update:page="page = $event"
+                  /> -->
                   <v-data-table
                     :headers="headers"
                     :items="filtered"
@@ -40,7 +48,7 @@
                     @update:items-per-page="updateItemsPerPage"
                   >
                     <template
-                      v-slot:footer.page-text="{
+                      v-slot:[`footer.page-text`]="{
                         pageStart,
                         pageStop,
                         itemsLength,
@@ -50,7 +58,7 @@
                       {{ itemsLength }}
                     </template>
 
-                    <template v-slot:item.actions="{ item }">
+                    <template v-slot:[`item.actions`]="{ item }">
                       <v-icon
                         class="me-2"
                         size="small"
@@ -61,10 +69,7 @@
                       </v-icon>
                       <v-icon
                         size="small"
-                        @click="
-                          dialogDelete = true;
-                          selectedItem = item;
-                        "
+                        @click="deleteItem(item)"
                         color="error"
                       >
                         mdi-delete
@@ -79,41 +84,26 @@
         </v-card-text>
         <v-card-actions md="6">
           <v-spacer />
-          <v-dialog v-model="dialogDelete" max-width="550px">
-            <v-card>
-              <v-card-title class="text-h5">{{
-                $t("deleteInfo")
-              }}</v-card-title>
 
-              <v-card-text>
-                <ul>
-                  <li>{{ $t("ID") }}: {{ selectedItem.id }}</li>
-                  <li>{{ $t("name") }}: {{ selectedItem.name }}</li>
-                  <li>{{ $t("last") }}: {{ selectedItem.last }}</li>
-                  <li>{{ $t("dataCreate") }}: {{ selectedItem.dataCreate }}</li>
-                </ul>
-              </v-card-text>
+          <ItemDelete
+            :dialogDelete="dialogDelete"
+            :selectedItem="selectedItem"
+            @deleteItemConfirm="deleteItemConfirm"
+            @closeDialog="closeDeleteDialog"
+          />
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="deleteItemConfirm"
-                  >{{ $t("yes") }}</v-btn
-                >
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="dialogDelete = false"
-                  >{{ $t("no") }}</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <!-- <ItemAdd
+            :dialogAdd="dialogAdd"
+            :newItem="newItem"
+            :servers="servers"
+            :filteredAppsByServer="filteredAppsByServer"
+            :nameError="nameError"
+            :duplicateNameError="duplicateNameError"
+            :serverError="serverError"
+          /> -->
+
           <v-dialog
-            v-model="Add"
+            v-model="dialogAdd"
             persistent
             max-width="800px"
             @input="resetApp"
@@ -131,9 +121,7 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="text-h5">{{
-                  $t("newServer")
-                }}</span>
+                <span class="text-h5">{{ $t("newServer") }}</span>
               </v-card-title>
 
               <v-card-text>
@@ -165,7 +153,7 @@
                 >
                   {{ $t("save") }}
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="Add = false">
+                <v-btn color="blue darken-1" text @click="dialogAdd = false">
                   {{ $t("close") }}
                 </v-btn>
               </v-card-actions>
@@ -179,8 +167,13 @@
   
 <script>
 import db from "~/data/db.json";
+import ItemFilter from "~/components/ItemFilter.vue";
+import ItemDelete from "~/components/ItemDelete.vue";
+import ItemAdd from "~/components/ItemAdd.vue";
+import ItemTable from "~/components/ItemTable.vue";
 
 export default {
+  components: { ItemFilter, ItemDelete, ItemTable, ItemAdd },
   data() {
     return {
       sortBy: "id",
@@ -190,10 +183,9 @@ export default {
       totalItems: 0,
       duplicateNameError: false,
       dialogDelete: false,
-      selectedItem: "",
+      selectedItem: {},
       search: "",
-      Add: false,
-      Edit: false,
+      dialogAdd: false,
       isEditing: false,
       headers: [
         { text: this.$t("ID"), value: "id" },
@@ -202,7 +194,7 @@ export default {
         { text: this.$t("dataCreate"), value: "dataCreate" },
         { text: this.$t("actions"), value: "actions", sortable: false },
       ],
-      servers: db.servers,
+      servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
       newItem: {
         id: null,
         name: "",
@@ -214,6 +206,7 @@ export default {
         dataCreate: 1,
       },
       nameError: false,
+      formattedDate: "",
     };
   },
   methods: {
@@ -232,7 +225,6 @@ export default {
     resetApp() {
       this.nameError = false;
       this.newItem.name = "";
-      this.newItem.serverName = "";
       this.isEditing = false;
     },
     checkDuplicateName() {
@@ -243,6 +235,13 @@ export default {
           (!this.isEditing || item.id !== this.newItem.id)
       );
     },
+    getDate() {
+      const currentDate = new Date();
+      const day = String(currentDate.getDate()).padStart(2, "0");
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const year = currentDate.getFullYear();
+      return `${day}.${month}.${year}`;
+    },
     save() {
       if (this.checkDuplicateName()) {
         this.duplicateNameError = true;
@@ -251,15 +250,22 @@ export default {
 
       this.duplicateNameError = false;
 
+      const formattedDate = this.getDate();
+
       if (this.isEditing) {
         const index = this.servers.findIndex(
           (item) => item.id === this.newItem.id
         );
         if (index > -1) {
-          this.servers[index] = {
-            ...this.newItem,
-            last: new Date().toLocaleDateString(),
-          };
+          if (
+            !this.filteredservers.some(
+              (app) => app.serverName === this.newItem.serverName
+            )
+          )
+            this.servers[index] = {
+              ...this.newItem,
+              last: formattedDate,
+            };
         }
       } else {
         const newId = Math.max(...this.servers.map((item) => item.id)) + 1;
@@ -267,8 +273,8 @@ export default {
         const newItem = {
           id: newId,
           name: this.newItem.name,
-          last: new Date().toLocaleDateString(),
-          dataCreate: new Date().toLocaleDateString(),
+          last: formattedDate,
+          dataCreate: formattedDate,
         };
 
         this.servers.push(newItem);
@@ -278,15 +284,22 @@ export default {
       }
 
       this.servers = [...this.servers];
+
       this.resetApp();
 
-      this.saveDataToJSON();
-      this.Add = false;
+      this.dialogAdd = false;
     },
     editItem(item) {
       this.newItem = { ...item };
       this.isEditing = true;
-      this.Add = true;
+      this.dialogAdd = true;
+    },
+    deleteItem(item) {
+      this.selectedItem = item;
+      this.dialogDelete = true;
+    },
+    closeDeleteDialog() {
+      this.dialogDelete = false;
     },
     deleteItemConfirm() {
       const index = this.servers.indexOf(this.selectedItem);
@@ -299,26 +312,26 @@ export default {
         }
       }
 
-      this.saveDataToJSON();
-
-      this.selectedItem = "";
+      this.selectedItem = {};
       this.dialogDelete = false;
+    },
+    closeDeleteAdd() {
+      this.dialogAdd = false;
     },
     updateItemsPerPage(value) {
       this.itemsPerPage = value;
       this.page = 1;
     },
+    updateSortBy(val) {
+      this.sortBy = val;
+    },
+    updateSortDesc(val) {
+      this.sortDesc = val;
+    },
     paginationText() {
       const start = (this.page - 1) * this.itemsPerPage + 1;
       const end = Math.min(start + this.itemsPerPage - 1, this.totalItems);
-      const text = `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
-      return text;
-    },
-    async saveDataToJSON() {
-      try {
-      } catch (error) {
-        console.error("Failed to save data to JSON", error);
-      }
+      return `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
     },
   },
   computed: {
@@ -331,7 +344,6 @@ export default {
         const matchesSearch = item.name
           .toLowerCase()
           .includes(this.search.toLowerCase());
-
         return matchesSearch;
       });
 
@@ -356,5 +368,13 @@ export default {
       return filteredItem.slice(start, end);
     },
   },
+  watch: {
+    search(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.page = 1;
+      }
+    },
+  },
 };
 </script>
+  

@@ -2,151 +2,448 @@
   "servers": [
     {
       "id": 1000,
-      "name": "Server1",
+      "name": "AlphaServer",
       "last": "16.05.2024",
       "dataCreate": "12.05.2024"
     },
     {
       "id": 1001,
-      "name": "WWW2",
-      "last": "14.05.2024",
-      "dataCreate": "11.05.2024"
+      "name": "BetaServer",
+      "last": "17.05.2024",
+      "dataCreate": "13.05.2024"
     },
     {
       "id": 1002,
-      "name": "AAA2",
-      "last": "15.05.2024",
-      "dataCreate": "10.05.2024"
+      "name": "GammaServer",
+      "last": "18.05.2024",
+      "dataCreate": "14.05.2024"
     },
     {
       "id": 1003,
-      "name": "Server2",
-      "last": "21.05.2024",
-      "dataCreate": "12.05.2024"
+      "name": "DeltaServer",
+      "last": "19.05.2024",
+      "dataCreate": "15.05.2024"
     },
     {
       "id": 1004,
-      "name": "WWW1",
+      "name": "EpsilonServer",
       "last": "20.05.2024",
-      "dataCreate": "11.05.2024"
+      "dataCreate": "16.05.2024"
     },
     {
       "id": 1005,
-      "name": "AAA",
-      "last": "15.05.2024",
-      "dataCreate": "15.05.2024"
+      "name": "ZetaServer",
+      "last": "21.05.2024",
+      "dataCreate": "17.05.2024"
+    },
+    {
+      "id": 1006,
+      "name": "EtaServer",
+      "last": "22.05.2024",
+      "dataCreate": "18.05.2024"
+    },
+    {
+      "id": 1007,
+      "name": "ThetaServer",
+      "last": "23.05.2024",
+      "dataCreate": "19.05.2024"
+    },
+    {
+      "id": 1008,
+      "name": "IotaServer",
+      "last": "24.05.2024",
+      "dataCreate": "20.05.2024"
+    },
+    {
+      "id": 1009,
+      "name": "KappaServer",
+      "last": "25.05.2024",
+      "dataCreate": "21.05.2024"
     }
   ],
-
   "applications": [
     {
       "id": 10000,
-      "name": "application1",
+      "name": "AppX",
       "last": "15.05.2024",
       "dataCreate": "10.05.2024",
-      "serverName": "Server1"
+      "serverName": "AlphaServer"
     },
     {
       "id": 10001,
-      "name": "application2",
-      "last": "20.05.2024",
-      "dataCreate": "09.05.2024",
-      "serverName": "WWW1"
+      "name": "AppY",
+      "last": "16.05.2024",
+      "dataCreate": "11.05.2024",
+      "serverName": "BetaServer"
     },
     {
       "id": 10002,
-      "name": "application3",
-      "last": "15.05.2024",
-      "dataCreate": "10.05.2024",
-      "serverName": "Server2"
+      "name": "AppZ",
+      "last": "17.05.2024",
+      "dataCreate": "12.05.2024",
+      "serverName": "GammaServer"
     },
     {
       "id": 10003,
-      "name": "App1",
-      "last": "20.05.2024",
-      "dataCreate": "09.05.2024",
-      "serverName": "WWW2"
+      "name": "DeltaApp",
+      "last": "18.05.2024",
+      "dataCreate": "13.05.2024",
+      "serverName": "DeltaServer"
     },
     {
       "id": 10004,
-      "name": "Aplikacja2",
-      "last": "15.05.2024",
-      "dataCreate": "10.05.2024",
-      "serverName": "Server1"
+      "name": "EpsilonApp",
+      "last": "19.05.2024",
+      "dataCreate": "14.05.2024",
+      "serverName": "EpsilonServer"
     },
     {
       "id": 10005,
-      "name": "App2",
+      "name": "ZetaApp",
       "last": "20.05.2024",
-      "dataCreate": "09.05.2024",
-      "serverName": "AAA2"
+      "dataCreate": "15.05.2024",
+      "serverName": "ZetaServer"
+    },
+    {
+      "id": 10006,
+      "name": "EtaApp",
+      "last": "21.05.2024",
+      "dataCreate": "16.05.2024",
+      "serverName": "EtaServer"
+    },
+    {
+      "id": 10007,
+      "name": "ThetaApp",
+      "last": "22.05.2024",
+      "dataCreate": "17.05.2024",
+      "serverName": "ThetaServer"
+    },
+    {
+      "id": 10008,
+      "name": "IotaApp",
+      "last": "23.05.2024",
+      "dataCreate": "18.05.2024",
+      "serverName": "IotaServer"
+    },
+    {
+      "id": 10009,
+      "name": "KappaApp",
+      "last": "24.05.2024",
+      "dataCreate": "19.05.2024",
+      "serverName": "KappaServer"
+    },
+    {
+      "id": 10010,
+      "name": "LambdaApp",
+      "last": "25.05.2024",
+      "dataCreate": "20.05.2024",
+      "serverName": "AlphaServer"
+    },
+    {
+      "id": 10011,
+      "name": "MuApp",
+      "last": "26.05.2024",
+      "dataCreate": "21.05.2024",
+      "serverName": "BetaServer"
+    },
+    {
+      "id": 10012,
+      "name": "NuApp",
+      "last": "27.05.2024",
+      "dataCreate": "22.05.2024",
+      "serverName": "GammaServer"
+    },
+    {
+      "id": 10013,
+      "name": "XiApp",
+      "last": "28.05.2024",
+      "dataCreate": "23.05.2024",
+      "serverName": "DeltaServer"
+    },
+    {
+      "id": 10014,
+      "name": "OmicronApp",
+      "last": "29.05.2024",
+      "dataCreate": "24.05.2024",
+      "serverName": "EpsilonServer"
+    },
+    {
+      "id": 10015,
+      "name": "PiApp",
+      "last": "30.05.2024",
+      "dataCreate": "25.05.2024",
+      "serverName": "ZetaServer"
+    },
+    {
+      "id": 10016,
+      "name": "RhoApp",
+      "last": "31.05.2024",
+      "dataCreate": "26.05.2024",
+      "serverName": "EtaServer"
+    },
+    {
+      "id": 10017,
+      "name": "SigmaApp",
+      "last": "01.06.2024",
+      "dataCreate": "27.05.2024",
+      "serverName": "ThetaServer"
+    },
+    {
+      "id": 10018,
+      "name": "TauApp",
+      "last": "02.06.2024",
+      "dataCreate": "28.05.2024",
+      "serverName": "IotaServer"
+    },
+    {
+      "id": 10019,
+      "name": "UpsilonApp",
+      "last": "03.06.2024",
+      "dataCreate": "29.05.2024",
+      "serverName": "KappaServer"
     }
   ],
-
   "tasks": [
     {
       "id": 100000,
-      "name": "Task0",
+      "name": "BackupDB",
       "last": "10.05.2024",
       "dataCreate": "01.05.2024",
-      "serverName": "WWW2",
-      "appName": "App1"
+      "serverName": "AlphaServer",
+      "appName": "AppX"
     },
     {
       "id": 100001,
-      "name": "TTT",
+      "name": "UpdateServer",
       "last": "11.05.2024",
       "dataCreate": "02.05.2024",
-      "serverName": "Server2",
-      "appName": "application3"
+      "serverName": "BetaServer",
+      "appName": "AppY"
     },
     {
       "id": 100002,
-      "name": "Task2",
+      "name": "CleanupLogs",
       "last": "12.05.2024",
-      "dataCreate": "01.05.2024",
-      "serverName": "WWW1",
-      "appName": "application2"
+      "dataCreate": "03.05.2024",
+      "serverName": "GammaServer",
+      "appName": "AppZ"
     },
     {
       "id": 100003,
-      "name": "Task3",
+      "name": "DeployApp",
       "last": "13.05.2024",
-      "dataCreate": "03.05.2024",
-      "serverName": "AAA2",
-      "appName": "App2"
+      "dataCreate": "04.05.2024",
+      "serverName": "DeltaServer",
+      "appName": "DeltaApp"
     },
     {
       "id": 100004,
-      "name": "TTT3",
+      "name": "MonitorPerformance",
       "last": "14.05.2024",
-      "dataCreate": "04.05.2024",
-      "serverName": "AAA",
-      "appName": ""
+      "dataCreate": "05.05.2024",
+      "serverName": "EpsilonServer",
+      "appName": "EpsilonApp"
     },
     {
       "id": 100005,
-      "name": "Task5",
+      "name": "DatabaseMigration",
       "last": "15.05.2024",
-      "dataCreate": "05.05.2024",
-      "serverName": "Server1",
-      "appName": "application1"
+      "dataCreate": "06.05.2024",
+      "serverName": "ZetaServer",
+      "appName": "ZetaApp"
     },
     {
       "id": 100006,
-      "name": "Zadanie2",
+      "name": "SecurityPatch",
       "last": "16.05.2024",
-      "dataCreate": "06.05.2024",
-      "serverName": "Server1",
-      "appName": "Aplikacja2"
+      "dataCreate": "07.05.2024",
+      "serverName": "EtaServer",
+      "appName": "EtaApp"
     },
     {
       "id": 100007,
-      "name": "Zadanie4",
-      "last": "16.05.2024",
+      "name": "UserAudit",
+      "last": "17.05.2024",
+      "dataCreate": "08.05.2024",
+      "serverName": "ThetaServer",
+      "appName": "ThetaApp"
+    },
+    {
+      "id": 100008,
+      "name": "ResourceScaling",
+      "last": "18.05.2024",
+      "dataCreate": "09.05.2024",
+      "serverName": "IotaServer",
+      "appName": "IotaApp"
+    },
+    {
+      "id": 100009,
+      "name": "LogRotation",
+      "last": "19.05.2024",
+      "dataCreate": "10.05.2024",
+      "serverName": "KappaServer",
+      "appName": "KappaApp"
+    },
+    {
+      "id": 100010,
+      "name": "CacheClear",
+      "last": "20.05.2024",
+      "dataCreate": "11.05.2024",
+      "serverName": "AlphaServer",
+      "appName": "LambdaApp"
+    },
+    {
+      "id": 100011,
+      "name": "SoftwareUpgrade",
+      "last": "21.05.2024",
+      "dataCreate": "12.05.2024",
+      "serverName": "BetaServer",
+      "appName": "MuApp"
+    },
+    {
+      "id": 100012,
+      "name": "ConfigBackup",
+      "last": "22.05.2024",
+      "dataCreate": "13.05.2024",
+      "serverName": "GammaServer",
+      "appName": "NuApp"
+    },
+    {
+      "id": 100013,
+      "name": "DiskCleanup",
+      "last": "23.05.2024",
+      "dataCreate": "14.05.2024",
+      "serverName": "DeltaServer",
+      "appName": "XiApp"
+    },
+    {
+      "id": 100014,
+      "name": "NetworkCheck",
+      "last": "24.05.2024",
+      "dataCreate": "15.05.2024",
+      "serverName": "EpsilonServer",
+      "appName": "OmicronApp"
+    },
+    {
+      "id": 100015,
+      "name": "FailoverTest",
+      "last": "25.05.2024",
       "dataCreate": "16.05.2024",
-      "serverName": "WWW2",
-      "appName": ""
+      "serverName": "ZetaServer",
+      "appName": "PiApp"
+    },
+    {
+      "id": 100016,
+      "name": "PerformanceBenchmark",
+      "last": "26.05.2024",
+      "dataCreate": "17.05.2024",
+      "serverName": "EtaServer",
+      "appName": "RhoApp"
+    },
+    {
+      "id": 100017,
+      "name": "BackupVerification",
+      "last": "27.05.2024",
+      "dataCreate": "18.05.2024",
+      "serverName": "ThetaServer",
+      "appName": "SigmaApp"
+    },
+    {
+      "id": 100018,
+      "name": "AppMonitoring",
+      "last": "28.05.2024",
+      "dataCreate": "19.05.2024",
+      "serverName": "IotaServer",
+      "appName": "TauApp"
+    },
+    {
+      "id": 100019,
+      "name": "PatchRollback",
+      "last": "29.05.2024",
+      "dataCreate": "20.05.2024",
+      "serverName": "KappaServer",
+      "appName": "UpsilonApp"
+    },
+    {
+      "id": 100020,
+      "name": "LoadTest",
+      "last": "30.05.2024",
+      "dataCreate": "21.05.2024",
+      "serverName": "AlphaServer",
+      "appName": "AppX"
+    },
+    {
+      "id": 100021,
+      "name": "DataArchiving",
+      "last": "31.05.2024",
+      "dataCreate": "22.05.2024",
+      "serverName": "BetaServer",
+      "appName": "AppY"
+    },
+    {
+      "id": 100022,
+      "name": "APICheck",
+      "last": "01.06.2024",
+      "dataCreate": "23.05.2024",
+      "serverName": "GammaServer",
+      "appName": "AppZ"
+    },
+    {
+      "id": 100023,
+      "name": "LogAnalysis",
+      "last": "02.06.2024",
+      "dataCreate": "24.05.2024",
+      "serverName": "DeltaServer",
+      "appName": "DeltaApp"
+    },
+    {
+      "id": 100024,
+      "name": "ServiceRestart",
+      "last": "03.06.2024",
+      "dataCreate": "25.05.2024",
+      "serverName": "EpsilonServer",
+      "appName": "EpsilonApp"
+    },
+    {
+      "id": 100025,
+      "name": "LoadBalancerConfig",
+      "last": "04.06.2024",
+      "dataCreate": "26.05.2024",
+      "serverName": "ZetaServer",
+      "appName": "ZetaApp"
+    },
+    {
+      "id": 100026,
+      "name": "StorageProvisioning",
+      "last": "05.06.2024",
+      "dataCreate": "27.05.2024",
+      "serverName": "EtaServer",
+      "appName": "EtaApp"
+    },
+    {
+      "id": 100027,
+      "name": "UserAccessReview",
+      "last": "06.06.2024",
+      "dataCreate": "28.05.2024",
+      "serverName": "ThetaServer",
+      "appName": "ThetaApp"
+    },
+    {
+      "id": 100028,
+      "name": "IncidentResponse",
+      "last": "07.06.2024",
+      "dataCreate": "29.05.2024",
+      "serverName": "IotaServer",
+      "appName": "IotaApp"
+    },
+    {
+      "id": 100029,
+      "name": "CapacityPlanning",
+      "last": "08.06.2024",
+      "dataCreate": "30.05.2024",
+      "serverName": "KappaServer",
+      "appName": "KappaApp"
     }
   ]
+  
 }

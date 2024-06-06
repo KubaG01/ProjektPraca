@@ -27,6 +27,7 @@ export default {
   no: "NO",
   itemsPerPage: "Items per page",
   all: "All",
+  of: "of",
   noData: "No data available",
   newApp: "Add new Application",
   newTask: "Add new Task",

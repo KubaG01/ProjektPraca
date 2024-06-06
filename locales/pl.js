@@ -16,7 +16,6 @@ export default {
   application: 'Aplikacja',
   task: 'Zadanie',
   ID: 'ID',
-  name: 'Nazwa',
   last: 'Ostatnia Modyfikacja',
   dataCreate: 'Data Utworzenia',
   actions: 'Akcje',
