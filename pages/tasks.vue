@@ -19,72 +19,16 @@
                     @update:search="search = $event"
                     @update:selectedServer="selectedServer = $event"
                     @update:selectedApp="selectedApp = $event"
+                    :typeName="typeName"
                   />
                   <v-divider :thickness="3" color="grey"></v-divider>
-                  <!-- <ItemTable
-                    :headers="headers"
-                    :filtered="filtered"
-                    :items-per-page="itemsPerPage"
-                    :page.sync="page"
-                    :totalItems="totalItems"
-                    :sort-by="sortBy"
-                    :sort-desc="sortDesc"
-                    @update:items-per-page="updateItemsPerPage"
-                    @edit-item="editItem"
-                    @delete-item="deleteItem"
-                    @update:sortBy="updateSortBy"
-                    @update:sortDesc="updateSortDesc"
-                    @update:page="page = $event"
-                  /> -->
-                  <v-data-table
-                    :headers="headers"
-                    :items="filtered"
-                    :items-per-page="itemsPerPage"
-                    :page.sync="page"
-                    :server-items-length="totalItems"
-                    :sort-by.sync="sortBy"
-                    :sort-desc.sync="sortDesc"
-                    :footer-props="{
-                      'items-per-page-options': [5, 10, 15, 20, 50, -1],
-                      'items-per-page-text': $t('itemsPerPage'),
-                      'items-per-page-all-text': $t('all'),
-                      'pagination-text': paginationText,
-                    }"
-                    :no-data-text="$t('noData')"
-                    @update:items-per-page="updateItemsPerPage"
-                  >
-                    <template
-                      v-slot:[`footer.page-text`]="{
-                        pageStart,
-                        pageStop,
-                        itemsLength,
-                      }"
-                    >
-                      {{ pageStart }}-{{ pageStop }} {{ $t("of") }}
-                      {{ itemsLength }}
-                    </template>
-
-                    <template v-slot:[`item.actions`]="{ item }">
-                      <v-icon
-                        class="me-2"
-                        size="small"
-                        @click="editItem(item)"
-                        color="primary"
-                      >
-                        mdi-pencil
-                      </v-icon>
-                      <v-icon
-                        size="small"
-                        @click="
-                          dialogDelete = true;
-                          selectedItem = item;
-                        "
-                        color="error"
-                      >
-                        mdi-delete
-                      </v-icon>
-                    </template>
-                  </v-data-table>
+                  <ItemTable
+                    ref="itemTable"
+                    :filteredItem="filtered"
+                    :editItem="editItem"
+                    :deleteItem="deleteItem"
+                    :typeName="typeName"
+                  />
                   <v-divider :thickness="3" color="grey"></v-divider>
                 </v-card>
               </v-container>
@@ -99,100 +43,14 @@
             :selectedItem="selectedItem"
             @deleteItemConfirm="deleteItemConfirm"
             @closeDialog="closeDeleteDialog"
+            :typeName="typeName"
           />
 
-          <!-- <ItemAdd
-            :dialogAdd="dialogAdd"
-            :newItem="newItem"
-            :servers="servers"
-            :filteredAppsByServer="filteredAppsByServer"
-            :nameError="nameError"
-            :duplicateNameError="duplicateNameError"
-            :serverError="serverError"
-          /> -->
-
-          <v-dialog
-            v-model="dialogAdd"
-            persistent
-            max-width="800px"
-            @input="resetApp"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="success"
-                class="ma-7"
-                v-bind="attrs"
-                v-on="on"
-                :style="{ minWidth: '90px' }"
-              >
-                {{ $t("add") }}
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ $t("newTask") }}</span>
-              </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="newItem.name"
-                        :label="$t('name') + '*'"
-                        :error="nameError || duplicateNameError"
-                        @blur="checkName"
-                        required
-                      ></v-text-field>
-                      <v-alert v-if="duplicateNameError" type="error">
-                        {{ $t("task") + " " + $t("exist") }}
-                      </v-alert>
-                    </v-col>
-
-                    <v-col cols="12" sm="6">
-                      <v-select
-                        v-model="newItem.serverName"
-                        :items="servers"
-                        item-text="name"
-                        item-value="name"
-                        :label="$t('server') + '*'"
-                        :error="serverError"
-                        @change="checkServer"
-                        @blur="checkServer"
-                        required
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                      <v-select
-                        v-model="newItem.appName"
-                        :items="filteredAppsByServer"
-                        item-text="name"
-                        item-value="name"
-                        :label="$t('application')"
-                        :disabled="!newItem.serverName"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <small>*{{ $t("required") }}</small>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  :disabled="!newItem.name || !newItem.serverName"
-                  @click="save"
-                >
-                  {{ $t("save") }}
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="dialogAdd = false">
-                  {{ $t("close") }}
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <ItemAdd
+            ref="itemAdd"
+            :typeName="typeName"
+            @update:typePage="typePage = $event"
+          />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -210,170 +68,23 @@ export default {
   components: { ItemFilter, ItemDelete, ItemTable, ItemAdd },
   data() {
     return {
-      sortBy: "id",
-      sortDesc: false,
-      itemsPerPage: 5,
-      page: 1,
-      totalItems: 0,
-      duplicateNameError: false,
+      typePage: [...db.tasks],
+      typeName: "task", //task, application, server
       selectedServer: null,
       selectedApp: null,
       dialogDelete: false,
       selectedItem: {},
       search: "",
-      dialogAdd: false,
-      isEditing: false,
-      headers: [
-        { text: this.$t("ID"), value: "id" },
-        { text: this.$t("name"), value: "name" },
-        { text: this.$t("last"), value: "last" },
-        { text: this.$t("dataCreate"), value: "dataCreate" },
-        { text: this.$t("servers"), value: "serverName" },
-        { text: this.$t("applications"), value: "appName" },
-        { text: this.$t("actions"), value: "actions", sortable: false },
-      ],
       tasks: db.tasks,
       servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
       applications: db.applications.sort((a, b) =>
         a.name.localeCompare(b.name)
       ),
-      filteredApplications: [...db.applications],
-      filteredAppsByServer: [...db.applications],
-      newItem: {
-        id: null,
-        name: "",
-        serverName: "",
-        appName: "",
-      },
-      sortDirections: {
-        id: 1,
-        name: 1,
-        last: 1,
-        dataCreate: 1,
-        serverName: 1,
-        appName: 1,
-      },
-      nameError: false,
-      serverError: false,
-      formattedDate: "",
     };
   },
   methods: {
-    checkName() {
-      if (!this.newItem.name.trim()) {
-        this.nameError = true;
-      } else {
-        this.nameError = false;
-        if (this.checkDuplicateName()) {
-          this.duplicateNameError = true;
-        } else {
-          this.duplicateNameError = false;
-        }
-      }
-    },
-    checkServer() {
-      if (!this.newItem.serverName) {
-        this.serverError = true;
-        this.filteredAppsByServer = [...this.applications];
-      } else {
-        this.serverError = false;
-        this.filteredAppsByServer = this.applications.filter(
-          (app) => app.serverName === this.newItem.serverName
-        );
-      }
-    },
-    resetApp() {
-      this.nameError = false;
-      this.serverError = false;
-      this.newItem.name = "";
-      this.newItem.serverName = "";
-      this.newItem.appName = "";
-
-      this.isEditing = false;
-    },
-    checkDuplicateName() {
-      const itemNameLower = this.newItem.name.trim().toLowerCase();
-      return this.tasks.some(
-        (item) =>
-          item.name.trim().toLowerCase() === itemNameLower &&
-          (!this.isEditing || item.id !== this.newItem.id)
-      );
-    },
-    getDate() {
-      const currentDate = new Date();
-      const day = String(currentDate.getDate()).padStart(2, "0");
-      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-      const year = currentDate.getFullYear();
-      return `${day}.${month}.${year}`;
-    },
-    save() {
-      if (this.checkDuplicateName()) {
-        this.duplicateNameError = true;
-        return;
-      }
-
-      const SA = this.selectedApp;
-      const SS = this.selectedServer;
-
-      this.duplicateNameError = false;
-
-      const formattedDate = this.getDate();
-
-      if (this.isEditing) {
-        const index = this.tasks.findIndex(
-          (item) => item.id === this.newItem.id
-        );
-        if (index > -1) {
-          if (
-            !this.filteredApplications.some(
-              (app) =>
-                app.serverName === this.newItem.serverName &&
-                app.name === this.newItem.appName
-            )
-          )
-            this.newItem.appName = "";
-
-          this.tasks[index] = {
-            ...this.newItem,
-            last: formattedDate,
-          };
-        }
-      } else {
-        const newId = Math.max(...this.tasks.map((item) => item.id)) + 1;
-
-        const newItem = {
-          id: newId,
-          name: this.newItem.name,
-          last: formattedDate,
-          dataCreate: formattedDate,
-          serverName: this.newItem.serverName,
-          appName: this.newItem.appName,
-        };
-
-        this.tasks.push(newItem);
-
-        if (!(this.itemsPerPage == -1))
-          this.page = Math.ceil((this.totalItems + 1) / this.itemsPerPage);
-      }
-
-      this.filteredItem = this.applications.filter(
-        (app) => app.serverName === this.newItem.serverName
-      );
-
-      this.tasks = [...this.tasks];
-
-      this.resetApp();
-
-      this.selectedApp = SA;
-      this.selectedServer = SS;
-
-      this.dialogAdd = false;
-    },
     editItem(item) {
-      this.newItem = { ...item };
-      this.isEditing = true;
-      this.dialogAdd = true;
-      this.checkServer();
+      this.$refs.itemAdd.editItem(item);
     },
     deleteItem(item) {
       this.selectedItem = item;
@@ -383,9 +94,9 @@ export default {
       this.dialogDelete = false;
     },
     deleteItemConfirm() {
-      const index = this.tasks.indexOf(this.selectedItem);
+      const index = this.typePage.indexOf(this.selectedItem);
       if (index > -1) {
-        this.tasks.splice(index, 1);
+        this.typePage.splice(index, 1);
 
         const lastItemIndexOnPage = (this.page - 1) * this.itemsPerPage;
         if (this.totalItems - 1 == lastItemIndexOnPage && this.page > 1) {
@@ -399,21 +110,6 @@ export default {
     closeDeleteAdd() {
       this.dialogAdd = false;
     },
-    updateItemsPerPage(value) {
-      this.itemsPerPage = value;
-      this.page = 1;
-    },
-    updateSortBy(val) {
-      this.sortBy = val;
-    },
-    updateSortDesc(val) {
-      this.sortDesc = val;
-    },
-    paginationText() {
-    const start = (this.page - 1) * this.itemsPerPage + 1;
-    const end = Math.min(start + this.itemsPerPage - 1, this.totalItems);
-    return `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
-  },
   },
   computed: {
     filtered() {
@@ -421,7 +117,7 @@ export default {
         this.search = "";
       }
 
-      let filteredItem = this.tasks.filter((item) => {
+      let filteredItem = this.typePage.filter((item) => {
         const matchesSearch = item.name
           .toLowerCase()
           .includes(this.search.toLowerCase());
@@ -432,42 +128,23 @@ export default {
         return matchesSearch && matchesServer && matchesApp;
       });
 
-      if (this.sortBy) {
-        filteredItem = filteredItem.sort((a, b) => {
-          const sortA = String(a[this.sortBy]).toLowerCase();
-          const sortB = String(b[this.sortBy]).toLowerCase();
-          if (sortA < sortB) return this.sortDesc ? 1 : -1;
-          if (sortA > sortB) return this.sortDesc ? -1 : 1;
-          return 0;
-        });
-      }
-
-      this.totalItems = filteredItem.length;
-      const start = (this.page - 1) * this.itemsPerPage;
-      let end = start + this.itemsPerPage;
-
-      if (this.itemsPerPage === -1) {
-        end = this.totalItems;
-      }
-
-      return filteredItem.slice(start, end);
+      return filteredItem;
     },
   },
-  
   watch: {
     selectedServer: function (newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.page = 1;
+        this.$refs.itemTable.page = 1;
       }
     },
     selectedApp: function (newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.page = 1;
+        this.$refs.itemTable.page = 1;
       }
     },
     search(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.page = 1;
+        this.$refs.itemTable.page = 1;
       }
     },
   },

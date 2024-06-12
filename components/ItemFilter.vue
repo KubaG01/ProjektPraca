@@ -2,8 +2,8 @@
   <v-layout row wrap class="pa-3">
     <v-flex
       :class="{
-        md4: applications && applications.length > 0,
-        md6: !applications || applications.length === 0,
+        md4: this.typeName === `task`,
+        md6: !(this.typeName === `task`),
       }"
       class="px-3"
     >
@@ -18,11 +18,11 @@
     </v-flex>
     <v-flex
       :class="{
-        md4: applications && applications.length > 0,
-        md6: !applications || applications.length === 0,
+        md6: this.typeName === `application`,
+        md4: !(this.typeName === `application`),
       }"
       class="px-3"
-      v-if="servers && servers.length > 0"
+      v-if="this.typeName !== 'server'"
     >
       <v-select
         v-model="localSelectedServer"
@@ -35,7 +35,7 @@
         clearable
       ></v-select>
     </v-flex>
-    <v-flex md4 class="px-3" v-if="applications && applications.length > 0">
+    <v-flex md4 class="px-3" v-if="this.typeName === 'task'">
       <v-select
         v-model="localSelectedApp"
         :items="localFilteredApplications"
@@ -60,6 +60,7 @@ export default {
     selectedApp: String,
     servers: Array,
     applications: Array,
+    typeName: String,
   },
   data() {
     return {
