@@ -31,5 +31,7 @@ export default {
   noData: "No data available",
   newApp: "Add new Application",
   newTask: "Add new Task",
-  newServer: "Add new Server"
+  newServer: "Add new Server",
+  cancel: "Cancel",
+  deleteError: "Delete connected items"
 }

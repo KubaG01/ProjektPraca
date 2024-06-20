@@ -31,5 +31,7 @@ export default {
   noData: "Brak dostępnych danych",
   newApp: "Dodaj nową Aplikację",
   newTask: "Dodaj nowe Zadanie",
-  newServer: "Dodaj nowy Serwer"
+  newServer: "Dodaj nowy Serwer",
+  cancel: "Anuluj",
+  deleteError: "Usuń podłączone elementy"
 }

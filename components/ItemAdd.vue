@@ -65,8 +65,9 @@
         <v-btn
           color="blue darken-1"
           text
-          :disabled="(!newItem.name || (this.typeName !== 'server' && !newItem.serverName))"
-
+          :disabled="
+            !newItem.name || (this.typeName != 'server' && !newItem.serverName)
+          "
           @click="save"
         >
           {{ $t("save") }}
@@ -85,10 +86,11 @@ import db from "~/data/db.json";
 export default {
   props: {
     typeName: String,
+    typePage: Array,
   },
   data() {
     return {
-      TypePage: "",
+      localTypePage: this.typePage,
       dialogAdd: false,
       nameError: false,
       serverError: false,
@@ -106,8 +108,8 @@ export default {
       newItem: {
         id: null,
         name: "",
-        ...(this.typeName !== "server" && { serverName: "" }),// serverName: "",
-        ...(this.typeName === "task" && { appName: "" }), // appName: "",
+        ...(this.typeName != "server" && { serverName: "" }), // serverName: "",
+        ...(this.typeName == "task" && { appName: "" }), // appName: "",
       },
     };
   },
@@ -144,7 +146,7 @@ export default {
       this.nameError = false;
       this.newItem.name = "";
 
-      if (this.typeName !== "server") {
+      if (this.typeName != "server") {
         this.newItem.serverName = "";
         this.serverError = false;
         if (this.typeName == "task") {
@@ -154,7 +156,7 @@ export default {
     },
     checkDuplicateName() {
       const itemNameLower = this.newItem.name.trim().toLowerCase();
-      return this.TypePage.some(
+      return this.localTypePage.some(
         (item) =>
           item.name.trim().toLowerCase() === itemNameLower &&
           (!this.isEditing || item.id !== this.newItem.id)
@@ -185,29 +187,29 @@ export default {
       const formattedDate = this.getDate();
 
       if (this.isEditing) {
-        const index = this.TypePage.findIndex(
+        const index = this.localTypePage.findIndex(
           (item) => item.id === this.newItem.id
         );
         if (index > -1) {
           if (
-            (this.typeName =
-              "task" &&
-              !this.filteredApplications.some(
-                (app) =>
-                  app.serverName === this.newItem.serverName &&
-                  app.name === this.newItem.appName
-              ))
+            this.typeName == "task" &&
+            !this.filteredApplications.some(
+              (app) =>
+                app.serverName === this.newItem.serverName &&
+                app.name === this.newItem.appName
+            )
           ) {
             this.newItem.appName = "";
           }
 
-          this.TypePage[index] = {
+          this.localTypePage[index] = {
             ...this.newItem,
             last: formattedDate,
           };
         }
       } else {
-        const newId = Math.max(...this.TypePage.map((item) => item.id)) + 1;
+        const newId =
+          Math.max(...this.localTypePage.map((item) => item.id)) + 1;
 
         const newItem = {
           id: newId,
@@ -224,33 +226,27 @@ export default {
           newItem.appName = this.newItem.appName;
         }
 
-        this.TypePage.push(newItem);
-
-        if (!(this.itemsPerPage == -1))
-          this.page = Math.ceil((this.totalItems + 1) / this.itemsPerPage);
+        this.localTypePage.push(newItem);
       }
 
-      this.TypePage = [...this.TypePage];
-      this.$emit("update:typePage", this.TypePage);
+      this.localTypePage = [...this.localTypePage];
+      this.$emit("update:typePage", this.localTypePage);
       this.resetApp();
 
       this.dialogAdd = false;
     },
   },
   created() {
-    const localTypeName = this.typeName
+    const localTypeName = this.typeName;
     switch (localTypeName) {
       case "task":
-        this.neww = this.$t("newTask");
-        this.TypePage = this.tasks;
+        this.neww = "newTask";
         break;
       case "application":
-        this.neww = this.$t("newApp");
-        this.TypePage = this.applications;
+        this.neww = "newApp";
         break;
       case "server":
-        this.neww = this.$t("newServer");
-        this.TypePage = this.servers;
+        this.neww = "newServer";
         break;
     }
   },

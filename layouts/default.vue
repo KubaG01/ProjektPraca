@@ -6,6 +6,7 @@
       :clipped="clipped"
       fixed
       app
+      permanent
     >
       <v-list>
         <v-list-item

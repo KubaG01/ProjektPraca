@@ -39,16 +39,16 @@
           <v-spacer />
 
           <ItemDelete
-            :dialogDelete="dialogDelete"
-            :selectedItem="selectedItem"
-            @deleteItemConfirm="deleteItemConfirm"
-            @closeDialog="closeDeleteDialog"
+            ref="itemDelete"
             :typeName="typeName"
+            :typePage="typePage"
+            @update:typePage="typePage = $event"
           />
 
           <ItemAdd
             ref="itemAdd"
             :typeName="typeName"
+            :typePage="typePage"
             @update:typePage="typePage = $event"
           />
         </v-card-actions>
@@ -72,8 +72,6 @@ export default {
       typeName: "task", //task, application, server
       selectedServer: null,
       selectedApp: null,
-      dialogDelete: false,
-      selectedItem: {},
       search: "",
       tasks: db.tasks,
       servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
@@ -87,28 +85,7 @@ export default {
       this.$refs.itemAdd.editItem(item);
     },
     deleteItem(item) {
-      this.selectedItem = item;
-      this.dialogDelete = true;
-    },
-    closeDeleteDialog() {
-      this.dialogDelete = false;
-    },
-    deleteItemConfirm() {
-      const index = this.typePage.indexOf(this.selectedItem);
-      if (index > -1) {
-        this.typePage.splice(index, 1);
-
-        const lastItemIndexOnPage = (this.page - 1) * this.itemsPerPage;
-        if (this.totalItems - 1 == lastItemIndexOnPage && this.page > 1) {
-          this.page -= 1;
-        }
-      }
-
-      this.selectedItem = {};
-      this.dialogDelete = false;
-    },
-    closeDeleteAdd() {
-      this.dialogAdd = false;
+      this.$refs.itemDelete.deleteItem(item);
     },
   },
   computed: {

@@ -59,6 +59,12 @@
       "name": "KappaServer",
       "last": "25.05.2024",
       "dataCreate": "21.05.2024"
+    },
+    {
+      "id": 1010,
+      "name": "TestServer",
+      "last": "31.06.2024",
+      "dataCreate": "21.05.2024"
     }
   ],
   "applications": [
@@ -201,6 +207,13 @@
       "last": "03.06.2024",
       "dataCreate": "29.05.2024",
       "serverName": "KappaServer"
+    },
+    {
+      "id": 10020,
+      "name": "TestApp",
+      "last": "19.06.2024",
+      "dataCreate": "09.06.2024",
+      "serverName": ""
     }
   ],
   "tasks": [

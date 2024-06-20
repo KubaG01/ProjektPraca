@@ -2,19 +2,10 @@
   <v-data-table
     :headers="headers"
     :items="filtered"
-    :items-per-page="itemsPerPage"
-    :page.sync="page"
+    :options.sync="options"
     :server-items-length="totalItems"
-    :sort-by.sync="sortBy"
-    :sort-desc.sync="sortDesc"
-    :footer-props="{
-      'items-per-page-options': [5, 10, 15, 20, 50, -1],
-      'items-per-page-text': $t('itemsPerPage'),
-      'items-per-page-all-text': $t('all'),
-      'pagination-text': paginationText,
-    }"
+    :footer-props="footerProps"
     :no-data-text="$t('noData')"
-    @update:items-per-page="updateItemsPerPage"
   >
     <template
       v-slot:[`footer.page-text`]="{ pageStart, pageStop, itemsLength }"
@@ -46,34 +37,21 @@ export default {
     typeName: String,
   },
   data() {
-    let headers = [
-      { text: this.$t("ID"), value: "id" },
-      { text: this.$t("name"), value: "name" },
-      { text: this.$t("last"), value: "last" },
-      { text: this.$t("dataCreate"), value: "dataCreate" },
-    ];
-
-    if (this.typeName != "server") {
-      headers.push({ text: this.$t("servers"), value: "serverName" });
-    }
-
-    if (this.typeName == "task") {
-      headers.push({ text: this.$t("applications"), value: "appName" });
-    }
-
-    headers.push({
-      text: this.$t("actions"),
-      value: "actions",
-      sortable: false,
-    });
-
     return {
-      sortBy: "id",
-      sortDesc: false,
-      itemsPerPage: 5,
-      page: 1,
+      headers: [],
       totalItems: 0,
-      headers: headers,
+      options: {
+        page: 1,
+        itemsPerPage: 5,
+        sortBy: ["id"],
+        sortDesc: [false],
+      },
+      footerProps: {
+        "items-per-page-options": [5, 10, 15, 20, 50, -1],
+        "items-per-page-text": this.$t("itemsPerPage"),
+        "items-per-page-all-text": this.$t("all"),
+        "pagination-text": "",
+      },
       tasks: db.tasks,
       servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
       applications: db.applications.sort((a, b) =>
@@ -89,54 +67,92 @@ export default {
       },
     };
   },
+  created() {
+    this.footerProps["pagination-text"] = this.paginationText();
+    this.setHeaders();
+  },
   methods: {
-    updateItemsPerPage(value) {
-      this.itemsPerPage = value;
-      this.page = 1;
-    },
     paginationText() {
-      const start = (this.page - 1) * this.itemsPerPage + 1;
-      const end = Math.min(start + this.itemsPerPage - 1, this.totalItems);
+      const start = (this.options.page - 1) * this.options.itemsPerPage + 1;
+      const end = Math.min(
+        start + this.options.itemsPerPage - 1,
+        this.totalItems
+      );
+
       return `${start} - ${end} ${this.$t("of")} ${this.totalItems}`;
+    },
+    setHeaders() {
+      let headers = [
+        { text: this.$t("ID"), value: "id" },
+        { text: this.$t("name"), value: "name" },
+        { text: this.$t("last"), value: "last" },
+        { text: this.$t("dataCreate"), value: "dataCreate" },
+      ];
+
+      if (this.typeName != "server") {
+        headers.push({ text: this.$t("servers"), value: "serverName" });
+      }
+
+      if (this.typeName == "task") {
+        headers.push({ text: this.$t("applications"), value: "appName" });
+      }
+
+      headers.push({
+        text: this.$t("actions"),
+        value: "actions",
+        sortable: false,
+      });
+
+      this.headers = headers; 
     },
   },
   computed: {
     filtered() {
-      if (this.sortBy) {
-        this.filteredItem = this.filteredItem.sort((a, b) => {
-          const sortA = String(a[this.sortBy]).toLowerCase();
-          const sortB = String(b[this.sortBy]).toLowerCase();
-          if (sortA < sortB) return this.sortDesc ? 1 : -1;
-          if (sortA > sortB) return this.sortDesc ? -1 : 1;
+      let filteredItems = [...this.filteredItem];
+
+      if (this.options.sortBy.length > 0) {
+        filteredItems = filteredItems.sort((a, b) => {
+          const sortA = String(a[this.options.sortBy[0]]).toLowerCase();
+          const sortB = String(b[this.options.sortBy[0]]).toLowerCase();
+          const sortDesc = this.options.sortDesc[0];
+
+          if (sortA < sortB) return sortDesc ? 1 : -1;
+          if (sortA > sortB) return sortDesc ? -1 : 1;
+
+          
           return 0;
         });
       } else {
-        this.filteredItem.sort((a, b) => a.id - b.id);
+        filteredItems = filteredItems.sort((a, b) => a.id - b.id);
       }
 
-      this.totalItems = this.filteredItem.length;
-      const start = (this.page - 1) * this.itemsPerPage;
-      let end = start + this.itemsPerPage;
+      this.totalItems = filteredItems.length;
+      const start = (this.options.page - 1) * this.options.itemsPerPage;
+      let end = start + this.options.itemsPerPage;
 
-      if (this.itemsPerPage === -1) {
+      if (this.options.itemsPerPage === -1) {
         end = this.totalItems;
       }
 
-      return this.filteredItem.slice(start, end);
+      return filteredItems.slice(start, end);
     },
   },
   watch: {
     filteredItem(newVal, oldVal) {
-      const lastItemOnPage = this.totalItems % this.itemsPerPage;
-      if (lastItemOnPage == 1 && this.page > 1) {
-        this.page -= 1;
+      const lastItemOnPage = this.totalItems % this.options.itemsPerPage;
+      if (lastItemOnPage == 1 && this.options.page > 1) {
+        this.options.page -= 1;
       }
 
       if (newVal.length > oldVal.length) {
-        this.sortBy = "id";
-        this.sortDesc = false;
-        this.page = Math.ceil((this.totalItems + 1) / this.itemsPerPage);
+        this.options.sortBy = [];
+        this.options.sortDesc = [];
+        this.options.page = Math.ceil(
+          (this.totalItems + 1) / this.options.itemsPerPage
+        );
       }
+
+      console.log(this.totalItems, newVal, oldVal, lastItemOnPage);
     },
   },
 };
