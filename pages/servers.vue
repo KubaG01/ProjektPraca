@@ -56,7 +56,7 @@
         </v-card-actions>
       </v-card>
     </v-col>
-    <v-snackbar v-model="snackbar" :timeout="4000" top>
+    <v-snackbar v-model="snackbar" :timeout="4000" top style="margin-top: 20px;">
       <span style="display: block; text-align: center; font-size: 16px"
         >{{ $t("server") }}:
         <strong
