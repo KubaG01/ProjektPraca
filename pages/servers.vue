@@ -44,23 +44,32 @@
             :typePage="typePage"
             :applications="applications"
             :tasks="tasks"
-            @update:typePage="typePage = $event"
+            @delete="deleteTab"
           />
 
           <ItemAdd
             ref="itemAdd"
             :typeName="typeName"
             :typePage="typePage"
-            @update:typePage="typePage = $event"
+            @save="addTab"
           />
         </v-card-actions>
       </v-card>
     </v-col>
+    <v-snackbar v-model="snackbar" :timeout="4000" top>
+      <span style="display: block; text-align: center; font-size: 16px"
+        >{{ $t("server") }}:
+        <strong
+          ><span style="color: red">{{ snackbarMessage[1] }}</span></strong
+        >
+        {{ " - " + $t(snackbarMessage[0]) }}</span
+      >
+    </v-snackbar>
   </v-row>
 </template>
   
 <script>
-import db from "~/data/db.json";
+import { mapState, mapActions } from "vuex";
 import ItemFilter from "~/components/ItemFilter.vue";
 import ItemDelete from "~/components/ItemDelete.vue";
 import ItemAdd from "~/components/ItemAdd.vue";
@@ -70,27 +79,72 @@ export default {
   components: { ItemFilter, ItemDelete, ItemTable, ItemAdd },
   data() {
     return {
-      typePage: [...db.servers],
+      typePage: [],
       typeName: "server", //task, application, server
       selectedServer: null,
       selectedApp: null,
       search: "",
-      tasks: db.tasks,
-      servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
-      applications: db.applications.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      ),
+      lastName: "",
+      snackbar: false,
+      snackbarMessage: {},
     };
   },
   methods: {
     editItem(item) {
+      this.lastName = item.name;
       this.$refs.itemAdd.editItem(item);
     },
     deleteItem(item) {
       this.$refs.itemDelete.deleteItem(item);
     },
+    addTab(newItem) {
+      const index = this.typePage.findIndex((item) => item.id === newItem.id);
+      if (index !== -1) {
+        this.tasks.forEach((task) => {
+          if (task.serverName == this.lastName) {
+            task.serverName = newItem.name;
+          }
+        });
+
+        this.applications.forEach((app) => {
+          if (app.serverName == this.lastName) {
+            app.serverName = newItem.name;
+          }
+        });
+
+        this.$set(this.typePage, index, newItem);
+        this.snackbarMessage[0] = "editInfo";
+        this.snackbarMessage[1] = this.lastName;
+      } else {
+        this.typePage.push(newItem);
+        this.snackbarMessage[0] = "addInfo";
+        this.snackbarMessage[1] = newItem.name;
+      }
+
+      this.showSnackbar();
+      this.$emit("updateTypePage", this.typePage);
+    },
+    deleteTab(item) {
+      const index = this.typePage.indexOf(item);
+      if (index > -1) {
+        this.typePage.splice(index, 1);
+      }
+      this.snackbarMessage[0] = "delInfo";
+      this.snackbarMessage[1] = item.name;
+      this.showSnackbar();
+      this.$emit("updateTypePage", this.typePage);
+    },
+    showSnackbar() {
+      this.snackbar = false;
+      this.snackbar = true;
+    },
+    ...mapActions(["setServers", "setApplications", "setTasks"]),
+  },
+  created() {
+    this.typePage = this.servers;
   },
   computed: {
+    ...mapState(["tasks", "servers", "applications"]),
     filtered() {
       if (this.search === null) {
         this.search = "";

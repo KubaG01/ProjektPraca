@@ -4,7 +4,7 @@ export default {
   ssr: false,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - ProjektPraca',
+    titleTemplate: 'ProjektPraca',
     title: 'ProjektPraca',
     htmlAttrs: {
       lang: 'en'
@@ -16,7 +16,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/vectio-logo.svg' }
     ]
   },
 

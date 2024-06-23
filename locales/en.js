@@ -32,6 +32,13 @@ export default {
   newApp: "Add new Application",
   newTask: "Add new Task",
   newServer: "Add new Server",
+  editApp: "Edit Application",
+  editTask: "Edit Task",
+  editServer: "Edit Server",
+  item: "Item",
+  addInfo: "added successfully",
+  delInfo: "deleted successfully",
+  editInfo: "edited successfully",
   cancel: "Cancel",
-  deleteError: "Delete connected items"
+  deleteError: "Connected items"
 }

@@ -15,7 +15,6 @@
       <v-card-title>
         <span class="text-h5">{{ $t(neww) }}</span>
       </v-card-title>
-
       <v-card-text>
         <v-container>
           <v-row>
@@ -35,7 +34,7 @@
             <v-col cols="6" v-if="this.typeName != 'server'">
               <v-select
                 v-model="newItem.serverName"
-                :items="servers"
+                :items="localServers"
                 item-text="name"
                 item-value="name"
                 :label="$t('server') + '*'"
@@ -68,7 +67,7 @@
           :disabled="
             !newItem.name || (this.typeName != 'server' && !newItem.serverName)
           "
-          @click="save"
+          @click="saveItem"
         >
           {{ $t("save") }}
         </v-btn>
@@ -81,7 +80,7 @@
 </template>
 
 <script>
-import db from "~/data/db.json";
+import { mapState, mapActions } from "vuex";
 
 export default {
   props: {
@@ -98,13 +97,9 @@ export default {
       formattedDate: "",
       neww: "",
       duplicateNameError: false,
-      tasks: db.tasks,
-      servers: db.servers.sort((a, b) => a.name.localeCompare(b.name)),
-      applications: db.applications.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      ),
-      filteredAppsByServer: [...db.applications],
-      filteredApplications: [...db.applications],
+      filteredAppsByServer: [],
+      filteredApplications: [],
+      localServers: [],
       newItem: {
         id: null,
         name: "",
@@ -145,6 +140,7 @@ export default {
       this.isEditing = false;
       this.nameError = false;
       this.newItem.name = "";
+      this.neww = this.neww.replace(/^edit/, "new");
 
       if (this.typeName != "server") {
         this.newItem.serverName = "";
@@ -172,12 +168,13 @@ export default {
     editItem(item) {
       this.newItem = { ...item };
       this.isEditing = true;
+      this.neww = this.neww.replace(/^new/, "edit");
       this.dialogAdd = true;
       if (this.typeName != "server") {
         this.checkServer();
       }
     },
-    save() {
+    saveItem() {
       if (this.checkDuplicateName()) {
         this.duplicateNameError = true;
         return;
@@ -206,6 +203,8 @@ export default {
             ...this.newItem,
             last: formattedDate,
           };
+
+          this.$emit("save", this.localTypePage[index]);
         }
       } else {
         const newId =
@@ -226,19 +225,42 @@ export default {
           newItem.appName = this.newItem.appName;
         }
 
-        this.localTypePage.push(newItem);
+        this.$emit("save", newItem);
       }
 
-      this.localTypePage = [...this.localTypePage];
-      this.$emit("update:typePage", this.localTypePage);
       this.resetApp();
-
       this.dialogAdd = false;
     },
   },
+  computed: {
+    ...mapState(["tasks", "servers", "applications"]),
+  },
   created() {
-    const localTypeName = this.typeName;
-    switch (localTypeName) {
+    this.filteredAppsByServer = [
+      ...this.applications.sort((a, b) =>
+        a.name.localeCompare(b.name, { sensitivity: "base" })
+      ),
+    ];
+
+    this.filteredApplications = [
+      ...this.applications.sort((a, b) =>
+        a.name.localeCompare(b.name, { sensitivity: "base" })
+      ),
+    ];
+
+    this.localServers = [
+      ...this.servers.sort((a, b) =>
+        a.name.localeCompare(b.name, { sensitivity: "base" })
+      ),
+    ];
+
+    this.$root.$on("updateTypePage", (newTypePage) => {
+      this.localTypePage = newTypePage.sort((a, b) =>
+        a.name.localeCompare(b.name, { sensitivity: "base" })
+      );
+    });
+
+    switch (this.typeName) {
       case "task":
         this.neww = "newTask";
         break;

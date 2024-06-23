@@ -32,6 +32,13 @@ export default {
   newApp: "Dodaj nową Aplikację",
   newTask: "Dodaj nowe Zadanie",
   newServer: "Dodaj nowy Serwer",
+  editApp: "Edytuj Aplikację",
+  editTask: "Edytuj Zadanie",
+  editServer: "Edytuj nowy Serwer",
+  item: "Element",
+  addInfo: "dodano pomyślnie",
+  delInfo: "usunięto pomyślnie",
+  editInfo: "edytowano pomyślnie",
   cancel: "Anuluj",
-  deleteError: "Usuń podłączone elementy"
+  deleteError: "Podłączone elementy"
 }

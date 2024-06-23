@@ -87,13 +87,12 @@ export default {
     checkApp() {
       if (!this.localSelectedServer) {
         this.localFilteredApplications = this.applications;
-        this.localSelectedApp = "";
       } else {
         this.localFilteredApplications = this.applications.filter(
           (app) => app.serverName === this.localSelectedServer
         );
-        this.localSelectedApp = "";
       }
+      this.localSelectedApp = "";
       this.$emit("update:selectedApp", this.localSelectedApp);
       this.$emit("update:filteredApplications", this.localFilteredApplications);
     },

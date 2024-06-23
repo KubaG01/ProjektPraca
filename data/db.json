@@ -213,7 +213,7 @@
       "name": "TestApp",
       "last": "19.06.2024",
       "dataCreate": "09.06.2024",
-      "serverName": ""
+      "serverName": "KappaServer"
     }
   ],
   "tasks": [
@@ -383,7 +383,7 @@
       "last": "30.05.2024",
       "dataCreate": "21.05.2024",
       "serverName": "AlphaServer",
-      "appName": "AppX"
+      "appName": ""
     },
     {
       "id": 100021,
@@ -455,7 +455,7 @@
       "last": "08.06.2024",
       "dataCreate": "30.05.2024",
       "serverName": "KappaServer",
-      "appName": "KappaApp"
+      "appName": ""
     }
   ]
   

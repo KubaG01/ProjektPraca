@@ -103,7 +103,7 @@ export default {
         sortable: false,
       });
 
-      this.headers = headers; 
+      this.headers = headers;
     },
   },
   computed: {
@@ -119,7 +119,6 @@ export default {
           if (sortA < sortB) return sortDesc ? 1 : -1;
           if (sortA > sortB) return sortDesc ? -1 : 1;
 
-          
           return 0;
         });
       } else {
@@ -139,20 +138,22 @@ export default {
   },
   watch: {
     filteredItem(newVal, oldVal) {
-      const lastItemOnPage = this.totalItems % this.options.itemsPerPage;
-      if (lastItemOnPage == 1 && this.options.page > 1) {
+      const lastItemOnPage = newVal.length % this.options.itemsPerPage;
+      if (lastItemOnPage == 0 && this.options.page > 1) {
         this.options.page -= 1;
       }
 
-      if (newVal.length > oldVal.length) {
+      if (newVal.length == oldVal.length + 1) { //Poprawić
         this.options.sortBy = [];
         this.options.sortDesc = [];
         this.options.page = Math.ceil(
-          (this.totalItems + 1) / this.options.itemsPerPage
+          (newVal.length) / this.options.itemsPerPage
         );
       }
 
-      console.log(this.totalItems, newVal, oldVal, lastItemOnPage);
+      if ((this.options.page - 1) * this.options.itemsPerPage > newVal.length ) {
+        this.options.page = 1;
+      }
     },
   },
 };
