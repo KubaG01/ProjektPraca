@@ -139,19 +139,23 @@ export default {
   watch: {
     filteredItem(newVal, oldVal) {
       const lastItemOnPage = newVal.length % this.options.itemsPerPage;
-      if (lastItemOnPage == 0 && this.options.page > 1) {
+      if (
+        lastItemOnPage == 0 &&
+        this.options.page > 1 &&
+        newVal.length != this.options.itemsPerPage * this.options.page
+      ) {
         this.options.page -= 1;
       }
 
-      if (newVal.length == oldVal.length + 1) { //Poprawić
+      if (newVal.length == oldVal.length + 1) {
         this.options.sortBy = [];
         this.options.sortDesc = [];
         this.options.page = Math.ceil(
-          (newVal.length) / this.options.itemsPerPage
+          newVal.length / this.options.itemsPerPage
         );
       }
 
-      if ((this.options.page - 1) * this.options.itemsPerPage > newVal.length ) {
+      if ((this.options.page - 1) * this.options.itemsPerPage > newVal.length) {
         this.options.page = 1;
       }
     },

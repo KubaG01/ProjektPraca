@@ -42,7 +42,6 @@
             ref="itemDelete"
             :typeName="typeName"
             :typePage="typePage"
-            @edit="editItem"
             @delete="deleteTab"
           />
 

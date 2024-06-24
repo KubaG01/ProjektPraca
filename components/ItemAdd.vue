@@ -24,9 +24,14 @@
                 :label="$t('name') + '*'"
                 :error="nameError || duplicateNameError"
                 @blur="checkName"
+                @input="checkName"
                 required
               ></v-text-field>
-              <v-alert v-if="duplicateNameError" type="error">
+              <v-alert
+                :value="duplicateNameError"
+                type="error"
+                transition="scale-transition"
+              >
                 {{ $t(typeName) + " " + $t("exist") }}
               </v-alert>
             </v-col>
@@ -65,13 +70,24 @@
           color="blue darken-1"
           text
           :disabled="
-            !newItem.name || (this.typeName != 'server' && !newItem.serverName)
+            !newItem.name.trim() ||
+            duplicateNameError ||
+            (this.typeName != 'server' && !newItem.serverName)
           "
           @click="saveItem"
         >
           {{ $t("save") }}
         </v-btn>
-        <v-btn color="blue darken-1" text @click="dialogAdd = false">
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="
+            () => {
+              dialogAdd = false;
+              resetApp();
+            }
+          "
+        >
           {{ $t("close") }}
         </v-btn>
       </v-card-actions>
@@ -114,11 +130,12 @@ export default {
         this.nameError = true;
       } else {
         this.nameError = false;
-        if (this.checkDuplicateName()) {
-          this.duplicateNameError = true;
-        } else {
-          this.duplicateNameError = false;
-        }
+      }
+
+      if (this.checkDuplicateName()) {
+        this.duplicateNameError = true;
+      } else {
+        this.duplicateNameError = false;
       }
     },
     checkServer() {
@@ -139,12 +156,13 @@ export default {
     resetApp() {
       this.isEditing = false;
       this.nameError = false;
+      this.serverError = false;
       this.newItem.name = "";
+      this.duplicateNameError = false;
       this.neww = this.neww.replace(/^edit/, "new");
 
       if (this.typeName != "server") {
         this.newItem.serverName = "";
-        this.serverError = false;
         if (this.typeName == "task") {
           this.newItem.appName = "";
         }
